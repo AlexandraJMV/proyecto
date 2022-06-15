@@ -29,7 +29,8 @@ typedef struct {
 
 typedef struct {
     char *Identificador;
-    int *valor , *pctjPresentacion;
+    int *valor;
+    int *pctjPresentacion;
 }Evaluacion;
 
 
