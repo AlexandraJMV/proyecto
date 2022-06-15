@@ -1,0 +1,50 @@
+Codigo curso, nombre curso, periodo, requisitos, area, evaluaciones, nota minima examen, eximicion examen, aprobacion, nota presentacion
+ICD 1140,Introducción a la Ingeniería en Ciencia de Datos,1,Sin Prerrequisitos,Ciencias de la Ingeniería
+ICD 1341,Fundamentos de Algoritmos,1,Sin Prerrequisitos,Ingeniería Aplicada: Desarrollo de Aplicaciones Informáticas
+ICD 1401,Bienestar y Aprendizaje Universitario,1,Sin Prerrequisitos,Ingeniería Aplicada:Gestión en Ciencia de Datos
+MAT 1001,FUNDAMENTOS DE MATEMÁTICAS PARA INGENIERÍA,1,Sin Prerrequisitos,Ciencias Básicas y Matemáticas
+FIN 100 -XXX,DESARROLLO INTEGRAL Y COMUNICACIÓN PARA INGENIERÍA,"1,2",Sin Prerrequisitos,
+ICD 1342,Fundamentos de Programación,2,ICD 1341,Ingeniería Aplicada: Ciencias de la computación
+MAT 1002,CÁLCULO DIFERENCIAL E INTEGRAL,2,MAT 1001,Ciencias Básicas y Matemáticas
+MAT 1004,ÁLGEBRA LINEAL,,MAT 1001,Ciencias Básicas
+FIS 1002,FÍSICA PARA INGENIERÍA,2,MAT 1001,Ciencias Básicas
+ICD 2243,Introducción al Análisis de Datos,3,"ICD 1140 – MAT 1004",Ingeniería Aplicada: Aprendizaje Automático
+ICD 2344,Estructura de Datos,3,ICD 1342,Ingeniería Aplicada: Ciencias de la Computación
+MAT 1003,CÁLCULO EN VARIAS VARIABLES,3,MAT 1002,Ciencias Básicas y Matemáticas ////////*******************************8<<<<<<<<,MARCADOR
+FIS 2120,Física Electromagnetismo,4,FIS 1002,Ciencias Básicas
+ICD 2145,CIENCIA Y TECNOLOGÍA,4,Sin Prerrequisitos,Ciencias Básicas
+ICD 2346,Paradigmas de programación,4,ICD 1342,Ingeniería Aplicada: Ciencias de la computación
+ICD 2347,Análisis y diseño de algoritmos,4,ICD 2344,Ingeniería Aplicada: Ciencias de la computación
+ING 9001,Inglés I- Beginner,Determinado por Unidad Académica,Puntaje Test de Diagnóstico,Obligatoria
+MAT 3105,Ecuaciones Diferenciales,4,MAT 1003,Ciencias Básicas
+FIS 3149,Física moderna,5,FIS 1002,Ciencias Básicas
+ICD 3148,Estadística Computacional,5,MAT 1003,Ciencias Básicas
+ICD 3149,Teoría de Sistemas,5,Sin Prerrequisitos,Ingeniería Aplicada: Gestión de ciencias de datos
+ICD 3350,Base de datos,5,ICD 2344,Ingeniería Aplicada: Ciencias de la Computación
+ICD 3151,Métodos numéricos,6,MAT 3105,Ciencias de la Ingeniería
+ING 9002,Inglés Il- ELEMENTARY,Determinado por Unidad Académica,"Puntaje Test de Diagnóstico, ING 9001",Obligatoria
+ICD 3152,Estadística Avanzada,6,ICD 3148,Ingeniería Aplicada: Aprendizaje Automático
+ICD 3153,Inteligencia Artificial,6,ICD 2347,Ingeniería Aplicada: Ciencias de la computación
+ICD 3255,Análisis Inteligente de Datos,6,ICD 3148,Ingeniería Aplicada: Asignatura Integradora
+ICD 3354,Hardware y Sistemas operativos,6,ICD 2344,Ingeniería Aplicada: Ciencias de la Computación
+ICA2121,Administración de empresas,7,ICD 3449,Ingeniería Aplicada:Gestión en Ciencia de Datos
+ING 9003,Inglés IIl- Elementary 2,Determinado por Unidad Académica,"ING 9001 ,ING 9002",Obligatoria
+ICD 4156,Optimización I,7,ICD 4156,Ciencias de la Ingeniería
+ICD 4157,Analisis de Series de Tiempo,7,ICD 3252,Ingeniería Aplicada: Aprendizaje Automatico
+ICD 4258,Aprendizaje Automático I,7,ICD 3353,Ingeniería Aplicada: Aprendizaje Automático
+ICD 4359,Almacenamiento y Recuperación de datos,7,ICD 3350,Ingeniería Aplicada: Ciencias de la Computación
+ICD4160,Optimización II,8,ICD4156,Ciencias de la Ingeniería
+ICD 4262,Aprendizaje Automático II,8,ICD 4258,Ingeniería Aplicada: Asignatura Integradora
+ING 9004,Inglés IV- Pre- Intermediate,Determinado por Unidad Académica,"ING 9001, ING 9002, ING 9003",Obligatoria
+ICD 4363,Redes de Computadores,8,ICD 3354,Ingeniería Aplicada: Ciencias de la computación
+ICD 4461,Metodologías de Desarrollo de Software,8,ICD 3350,Ingeniería Aplicada: Gestión en Ciencias de datos
+ICD 5164,Economía y finanzas,9,ICA 2121,Ingeniería Aplicada: Gestión de ciencia de datos
+ICD 5167,Ciencia de Redes,9,ICD 4258,Ingeniería Aplicada: Ciencias de la Computación
+ICD5366,COMPUTACION PARALELA Y DISTRIBUIDA,9,ICI4340 - REDES DE COMPUTADORES,Ingeniería Aplicada: Sistemas de Computación y redes
+ICD 5465,Visualización de Datos,9,ICD 4258,Ingeniería Aplicada: Gestión en ciencia de datos
+ICD 5468,Taller de liderazgo y trabajo en equipo,9,Sin Prerrequisitos,Ingeniería Aplicada: Gestión en ciencia de datos
+ICD 5369,Big Data,10,ICD 5366,Ingeniería Aplicada: Asignatura integradora de dominio
+ICD 5471,"Negocios, Innovación y emprendimiento",10,ICD 5468,Ingeniería Aplicada: Gestión en ciencia de datos
+ICD 5570,Seminario de Título,10,"ICD 2346,ICD 3148,ICD 3153,ICD 3354,ICD 4156,ICD 4157,ICD 4160,ICD 4262,ICD 5167,ICD 5465,ICD 5366,ICD 5468",Ingeniería Aplicada: Asignatura integradora de dominio
+ICD 6473,"Privacidad, Ética y Seguridad",11,ICD 5471,Ingeniería Aplicada: Gestión en ciencia de datos
+ICD 6572,Proyecto de Título,11,ICD 5570,Ingeniería Aplicada: Asignatura integradora de dominio
