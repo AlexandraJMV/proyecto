@@ -1,6 +1,10 @@
-#ifndef funciones_h
-#define funciones_h
+#ifndef FUNCIONES_H_INCLUDED
+#define FUNCIONES_H_INCLUDED
 
-// args
+typedef struct Estudiante;
 
-#endif /* funciones_h */
+typedef struct Carrera;
+
+typedef struct Curso;
+
+typedef struct Evaluacion;
