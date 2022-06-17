@@ -35,9 +35,7 @@ int main (void)
                 printf("Iniciar Sesion\n\n");
 
                 printf(
-                    "1. Rut\n"
-                    "2. Contraseña\n"
-                    "3. Comprovacion\n"
+                    "1. Rut y Contraseña"
                 );
 
                 scanf("%ld", &selec2);
@@ -50,177 +48,88 @@ int main (void)
                         system("cls");
                         puts("Ingrese Rut");
                         scanf("%s", arch);
-                        getchar();
-                        //buscar_Rut(arch,usuario)
-                        getchar();
-                    break;
+                        clean();
+                        //buscar_Us(arch,usuario)
+                        clean();
+                        if (/*buscar_Us(arch,usuario == 1*/NULL){
+                            system("cls");
+                            printf("Navegador Academico\n\n");
+                            printf(
+                                "1. Mostrar datos Usuario\n"
+                                "2. Calculador de Notas\n"
+                                "3. Aprovacion y cursos\n"
+                                "4. Visualizacion  y Modificacion de Notas\n"
+                                "5. Organizador Horario\n"
+                                "6. Valoracion del Curso\n"
+                                "7. Cerrar sesion\n"
 
-                    case 2:
+                            );
 
-                        system("cls");
-                        puts("Ingrese Contraseña");
-                        scanf("%s", arch);
-                        getchar();
-                        //buscar_Contraseña(arch,usuario)
-                        getchar();
-                    break;
+                            scanf("%ld", &selec3);
+                            clean();
 
-                    case 3:
+                            switch (selec3){
 
-                        system("cls");
-                        printf("Navegador Academico\n\n");
-                        printf(
-                            "1. Mostrar datos Usuario\n"
-                            "2. Calculador de Notas\n"
-                            "3. Aprovacion y cursos\n"
-                            "4. Visualizacion  y Modificacion de Notas\n"
-                            "5. Organizador Horario\n"
-                            "6. Valoracion del Curso\n"
-                            "7. Cerrar sesion\n"
+                                case 1:
 
-                        );
+                                    system("cls");
+                                    puts("Estos son sus Datos");
+                                    //Mostrar_datos(arch,usuario)
+                                    clean();
+                                break;
 
-                        scanf("%ld", &selec3);
-                        getchar();
+                                case 2:
+                                    system("cls");
+                                    puts("Nota y Porcentaje");
+                                    scanf("%s", arch);
+                                    getchar();
+                                    //Calculador(arch,usuario)
+                                    clean();
+                                break;
 
-                        switch (selec3){
+                                case 3:
 
-                            case 1:
+                                    system("cls");
+                                    puts("Formas de aprovacion o reprovacion");
+                                    //Mostrar_ap(arch,usuario)
+                                    clean();
+                                break;
 
-                                system("cls");
-                                puts("Estos son sus Datos");
-                                //Mostrar_datos(arch,usuario)
-                                getchar();
-                            break;
+                                case 4:
 
-                            case 2:
-                                system("cls");
-                                puts("Nota y Porcentaje");
-                                scanf("%s", arch);
-                                getchar();
-                                //Calculador(arch,usuario)
-                                getchar();
-                            break;
+                                    system("cls");
+                                    puts("Estas son sus notas");
+                                    //Mostrar_notas(arch,usuario)
+                                    clean();
+                                break;
 
-                            case 3:
+                                case 5:
 
-                                system("cls");
-                                puts("Formas de aprovacion o reprovacion");
-                                //Mostrar_ap(arch,usuario)
-                                getchar();
-                            break;
+                                    system("cls");
+                                    puts("Este es tu horario");
+                                    //Mostrar_horario(arch,usuario)
+                                    clean();
+                                break; 
 
-                            case 4:
+                                case 6:
 
-                                system("cls");
-                                puts("Estas son sus notas");
-                                //Mostrar_notas(arch,usuario)
-                                getchar();
-                            break;
+                                    system("cls");
+                                    puts("Ingrese valoracion del curso");
+                                    scanf("%s", arch);
+                                    clean();
+                                    //Valoracion(arch,usuario)
+                                    clean();
+                                break;  
 
-                            case 5:
-
-                                system("cls");
-                                puts("Este es tu horario");
-                                //Mostrar_horario(arch,usuario)
-                                getchar();
-                            break; 
-
-                            case 6:
-
-                                system("cls");
-                                puts("Ingrese valoracion del curso");
-                                scanf("%s", arch);
-                                getchar();
-                                //Valoracion(arch,usuario)
-                                getchar();
-                            break;  
-
-                        }   
-                    break;
-            }
-            break;
-
+                            }   
+                        }
+                    }
             case 2:
-
                 system("cls");
-                printf("Crear Perfil\n\n");
-
-                printf(
-                    "1. Nombre del Estudiante\n"
-                    "2. Carrera del Estudiante\n"
-                    "3. Periodo del Estudiante\n"
-                    "4. Modificacion y verificacion de cursos\n"
-                    "5. Horario Base\n"
-                    "6. Establecer Contraseña\n"
-                );
-
-                scanf("%ld", &selec2);
-                getchar(); 
-
-                switch(selec4){
-
-                    case 1:
-
-                        system("cls");
-                        puts("Ingrese Nombre Estudiante");
-                        scanf("%s", arch);
-                        getchar();
-                        //Agregar_Nom(arch,usuario)
-                        getchar();
-                    break;
-
-                    case 2:
-
-                        system("cls");
-                        puts("Ingrese Carrera");
-                        scanf("%s", arch);
-                        getchar();
-                        //Agregar_carr(arch,usuario)
-                        getchar();
-                    break;
-
-                    case 3:
-
-                        system("cls");
-                        puts("Ingrese Periodo Estudiante");
-                        scanf("%s", arch);
-                        getchar();
-                        //Agregar_Per(arch,usuario)
-                        getchar();
-                    break;
-
-                    case 4:
-
-                        system("cls");
-                        puts("Ingrese Modificacion del curso");
-                        scanf("%s", arch);
-                        getchar();
-                        //Modificacion(arch,usuario)
-                        getchar();
-                    break;
-
-                    case 5:
-
-                        system("cls");
-                        puts("Ingrese Horario Base");
-                        scanf("%s", arch);
-                        getchar();
-                        //Agregar_Ho(arch,usuario)
-                        getchar();
-                    break;
-
-                    case 6:
-
-                        system("cls");
-                        puts("Ingrese Nueva Contraseña");
-                        scanf("%s", arch);
-                        getchar();
-                        //Agregar_Con(arch,usuario)
-                        getchar();
-                    break;
-                    
-                }
+                puts("Formulario :");
+                clean();
+                //Formulario(arch,usuario)
+                clean();
             break;
         }
         break;
