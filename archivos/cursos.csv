@@ -10,7 +10,7 @@ MAT 1004,ÁLGEBRA LINEAL,,MAT 1001,Ciencias Básicas
 FIS 1002,FÍSICA PARA INGENIERÍA,2,MAT 1001,Ciencias Básicas
 ICD 2243,Introducción al Análisis de Datos,3,"ICD 1140 – MAT 1004",Ingeniería Aplicada: Aprendizaje Automático
 ICD 2344,Estructura de Datos,3,ICD 1342,Ingeniería Aplicada: Ciencias de la Computación
-MAT 1003,CÁLCULO EN VARIAS VARIABLES,3,MAT 1002,Ciencias Básicas y Matemáticas ////////*******************************8<<<<<<<<,MARCADOR
+MAT 1003,CÁLCULO EN VARIAS VARIABLES,3,MAT 1002,Ciencias Básicas y Matemáticas
 FIS 2120,Física Electromagnetismo,4,FIS 1002,Ciencias Básicas
 ICD 2145,CIENCIA Y TECNOLOGÍA,4,Sin Prerrequisitos,Ciencias Básicas
 ICD 2346,Paradigmas de programación,4,ICD 1342,Ingeniería Aplicada: Ciencias de la computación
@@ -33,7 +33,7 @@ ICD 4156,Optimización I,7,ICD 4156,Ciencias de la Ingeniería
 ICD 4157,Analisis de Series de Tiempo,7,ICD 3252,Ingeniería Aplicada: Aprendizaje Automatico
 ICD 4258,Aprendizaje Automático I,7,ICD 3353,Ingeniería Aplicada: Aprendizaje Automático
 ICD 4359,Almacenamiento y Recuperación de datos,7,ICD 3350,Ingeniería Aplicada: Ciencias de la Computación
-ICD4160,Optimización II,8,ICD4156,Ciencias de la Ingeniería
+ICD 4160,Optimización II,8,ICD4156,Ciencias de la Ingeniería
 ICD 4262,Aprendizaje Automático II,8,ICD 4258,Ingeniería Aplicada: Asignatura Integradora
 ING 9004,Inglés IV- Pre- Intermediate,Determinado por Unidad Académica,"ING 9001, ING 9002, ING 9003",Obligatoria
 ICD 4363,Redes de Computadores,8,ICD 3354,Ingeniería Aplicada: Ciencias de la computación
