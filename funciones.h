@@ -9,4 +9,6 @@ typedef struct Curso;
 
 typedef struct Evaluacion;
 
+void formulario(void);
+
 #endif
