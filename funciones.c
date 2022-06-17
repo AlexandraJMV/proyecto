@@ -12,9 +12,9 @@
 #define MAXCOURSES 100
 
 typedef struct {
-    char *Nombre;
-    char *Contrasena;
-    char *Periodo;
+    char Nombre[MAXCHAR];
+    char Contrasena[MAXCHAR];
+    char Periodo[MAXCHAR];
     TreeMap *Cursos;
 }Estudiante;
 
@@ -24,23 +24,25 @@ typedef struct {
 }Carrera;
 
 typedef struct {
-    char *NomCurso;
-    char *Periodo;
-    char *EstadoAprovacion;
-    int *NotaEximicion ; 
-    int *NotaAprobación;
+    char IDcurso[MAXCHAR]; // considerar eliminar
+    char NomCurso[MAXCHAR];
+    char Periodo[MAXCHAR];
+    char AreaCurso[MAXCHAR];
+    char EstadoAprovacion[MAXCHAR];
+    float *NotaEximicion; 
+    float *NotaAprobación;
     List *Evaluaciones;
-    List *Requisitos;
 }Curso;
 
 typedef struct {
-    char *Identificador;
-    int *valor;
-    int *pctjPresentacion;
+    char Identificador[MAXCHAR];
+    float *valor;
+    float *pctjPresentacion;
 }Evaluacion;
 
 typedef struct{
-    char *IDCurso;
+    char IDCurso[MAXCHAR];
+    Curso * InfoCurso;
     List* Requisitos;
 } Node;
 
@@ -108,33 +110,28 @@ const char *get_csv_field (char * tmp, int k) {
     return NULL;
 }
 
-
-Curso * read_course_line(char * str){
-    return NULL;
-}
-
-HashMap * import_courses(void){
-    FILE * entrada = NULL;
-    char str[MAXCHAR];
-
-    HashMap * grafo = createMap(MAXCOURSES);
-
-    entrada = fopen("archivos/cursos", "rt");
-    if (entrada==NULL){
-        perror("No se ha podido abrirel archivo, error fatal! :c\n");
+// Falta mejor forma para representar requisitos. Se nota que no es necesario el
+// guardar los requerimmientos de los cursos en la estructura de datos si se guardaran en un grafo 
+// implementado con un hashmap, al cual puede accederse solo con la clave de interes.
+Node * createNode(){
+    Node * nodo = (Node*)malloc(sizeof(Node));
+    if (nodo == NULL){
+        perror("Error al crear nodo para grafos. ");
         exit(1);
     }
+    nodo->Requisitos = createList();
+    nodo->InfoCurso = createCourse();
+    return nodo;
+}
 
-    while(fgets(str, MAXCHAR, entrada) != NULL){
-        Curso * course = read_course_line(str);
-        
-        if(course){
-            createNode(course);
-            insert(grafo, course);
-        }
+Curso * createCourse(void){
+    Curso * course = (Curso*)malloc(sizeof(Curso));
+    if(course == NULL){
+        perror("Error al reservar memoria para curso ");
+        exit(1);
     }
-
-    return grafo;
+    course->Evaluaciones = createList();
+    return course;
 }
 
 void to_minusc(char * str){
@@ -144,6 +141,60 @@ void to_minusc(char * str){
     }
 
     return;
+}
+
+void set_requisitos(char *requstr, Node * node){
+
+
+    return;
+}
+
+// importar cursos crea y retorna un grafo con cursos y sus dependencias.
+HashMap * import_courses(void){
+    FILE * entrada = NULL;
+    char str[MAXCHAR];
+
+    HashMap * grafo = createMap(MAXCOURSES);
+
+    entrada = fopen("archivos/cursos", "rt");
+    if (entrada==NULL){
+        perror("No se ha podido abrir el archivo, error fatal! :c\n");
+        exit(1);
+    }
+
+    while(fgets(str, MAXCHAR, entrada) != NULL){
+
+        Curso * course = createCourse();
+        Node * nodo = createNode();
+
+        for (int i=0 ; i<5 ; i++){
+            const char * campo = get_csv_field(str, i);
+            switch(i)
+            {
+                case 0:
+                    strcpy(course->IDcurso, campo);
+                    strcpy(nodo->IDCurso, campo);
+                    break;
+                case 1:
+                    strcpy(course->NomCurso, campo);
+                    break;
+                case 2:
+                    strcpy(course->Periodo, campo);
+                    break;
+                case 3:
+                    //set_requisitos(campo, nodo);
+                    break;
+                case 4:
+                    strcpy(course->AreaCurso, campo);
+                    break;
+            }
+        }
+
+        // Insertar nodo en grafo.
+        nodo->InfoCurso = course;
+        insertMap(grafo, _strdup(nodo->IDCurso), nodo);
+    }
+    return grafo;
 }
 
 int set_username(char * user){
@@ -165,7 +216,6 @@ int set_username(char * user){
         }
 
         if (is_validuser(user_imput)){
-            
             strcpy(user, user_imput);
             return 1;
         }
@@ -188,7 +238,7 @@ int set_username(char * user){
 void formulario(void){
 
     char selec[10];
-    char user_name[MAXCHAR];
+    char user_name[MAXCHAR], user_career[MAXCHAR], user_period[10];
 
     printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n"
            "Bienvenido estudiante!\n"
@@ -217,7 +267,7 @@ void formulario(void){
         if(set_username(user_name) == 0)
             return;
         
-        if(set_career(user_carrer) == 0)
+        if(set_career(user_career) == 0)
             return;
 
         if(set_period(user_period) == 0)
@@ -226,14 +276,14 @@ void formulario(void){
         if(modify_courses(user_career) == 0)
             return;
         
-        if(set_horario(user_carrer) == 0)
+        if(set_horario(user_career) == 0)
             return;
         
         set_password();
 
         system("cls");
         printf( "Gracias por crear una cuenta! Por favor, disfrute de las funcionalidades "
-                "que le ofrecemos! ^u^ )/\n\n");
+                "que le ofrecemos!\n\n");
         clean();
     }
 
