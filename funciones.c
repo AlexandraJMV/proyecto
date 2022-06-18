@@ -10,17 +10,19 @@
 
 #define MAXCHAR 300
 #define MAXCOURSES 100
-typedef struct {
-    char Nombre[MAXCHAR];
-    char Contrasena[MAXCHAR];
-    char Periodo[MAXCHAR];
-    List *Cursos;
-}Estudiante;
-/**/
+
 typedef struct {
     char NomCarrera[MAXCHAR];
     List *Ramos;
 }Carrera;
+
+typedef struct {
+    char Nombre[MAXCHAR];
+    char Contrasena[MAXCHAR];
+    char Periodo[MAXCHAR];
+    Carrera * Carrera;
+    List *Cursos;
+}Estudiante;
 
 typedef struct {
     char IDcurso[MAXCHAR]; // considerar eliminar
@@ -423,7 +425,7 @@ int set_username(char * user){ /* LISTO */
     return 0;
 }
 
-Estudiante * create_student(){
+Estudiante * create_student(){ /* LISTO */
     Estudiante * newEst = (Estudiante*)malloc(sizeof(Estudiante));
     if(newEst==NULL){
         perror("No se pudo reservar memoria para nuevo estudiante ");
@@ -433,18 +435,55 @@ Estudiante * create_student(){
     return newEst;
 }
 
-void formulario(void){
-    /* PUSE ESTOS AQUI PA TESTEAR. !!!!!!<<<<<<<<<<<<<<<<<<< favor no borrar por el momento! ^_^UU - Ale
-    HashMap * courses =  import_courses();
-    List * careers = import_carreras(courses);
-    mostrarCarreras(careers);
-    getchar();*/
+int set_career(List * cars, Estudiante * user){
+    int cont = 0, select;
+    char user_input[MAXCHAR];
+
+    printf( "==========================================\n"
+            "A continuacion se le presentaran las carreras disponibles en \n"
+            "dentro del navegador. Por favor, elija aquella a la que pertenezca.\n"
+
+            "\nPuede ingresar cualquier numero no valido para cancelar la operacion \n"
+            "y volver al menu principal.\n"
+            "==========================================\n\n"
+
+            "++++++++++++++++ Carreras disponibles ++++++++++++++++\n");
+    
+
+    Carrera * recCar = (Carrera*) firstList(cars);
+    while(recCar!=NULL){
+        cont++;
+        printf( "------------------------------------------------------+\n"
+                "|%-2d-.|%-20s|\n", cont, recCar->NomCarrera);
+        
+        recCar = (Carrera*) nextList(cars);
+    }
+    printf("------------------------------------------------------+\n");
+    
+    fgets(user_input, MAXCHAR, stdin);
+    select = toselect(user_input);
+
+    if(select > cont || select<cont){
+        system("cls");
+        printf("\n Volviendo al menu principal...");
+        clean();
+        return 0;
+    }
+    else{
+        printf("^_^)b\n");
+    }
+
+    clean();
+    return 1;
+}
+
+void formulario(List * careers){
+
     char selec[10];
-    char user_name[MAXCHAR]/*, user_career[MAXCHAR], user_period[10]*/;
+    char user_name[MAXCHAR], user_career[MAXCHAR]/*, user_period[10]*/;
     Estudiante * new_user;
 
     new_user = create_student();
-
 
     system("cls");
     printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n"
@@ -453,7 +492,7 @@ void formulario(void){
 
            "A continuacion se le realizaran una serie de preguntas con tal de establecer\n"
            "su nueva cuenta en el sistema. Se le solicita que siga las instrucciones de forma\n"
-           "responsable.\n\n Desea continuar? Escriba y para confirmar.\n" 
+           "responsable.\n\nDesea continuar? Escriba y para confirmar.\n" 
            "\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
     fgets(selec, 10, stdin);
@@ -470,10 +509,12 @@ void formulario(void){
     else{
         // Formulario por partes por orden. retorno de 0 significa que se ha cancelado el registro del usuario y se 
         // vuelve al menu principal
-        if(set_username(user_name) == 0)
-            return;
-        else
+        if(set_username(user_name))
             strcpy(new_user->Nombre, user_name);
+        else
+            return;
+        if(set_career(careers, new_user) == 0)
+            return;
 
         /*
         if(set_career(user_career) == 0)

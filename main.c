@@ -1,13 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "hashmap.h"
 #include "funciones.h"
+#include "list.h"
 
 #define MAX 100
 
-//Estudiante * usuario = create_usuario;
 int main (void)
 {
+    // Importar datos base para funcionamiento del programa.
+    HashMap * courses =  import_courses();
+    List * careers = import_carreras(courses);
+
     while (1){
 
         char strselec[10];
@@ -18,13 +23,12 @@ int main (void)
         char arch[MAX] = "";
 
         system("cls");
-        printf("----Navegador Academico----\n\n");
+        printf("----Navegador Academico----\n\n"
 
-        printf(
-            "1. Iniciar Sesion\n"
-            "2. Crear Perfil\n"
-            "3. Salir\n"
-        );
+                "1. Iniciar Sesion\n"
+                "2. Crear Perfil\n"
+                "3. Salir\n");
+        
 
         fgets(strselec, 10, stdin);
         clean();
@@ -38,12 +42,16 @@ int main (void)
                 printf("Iniciar Sesion\n\n");
 
                 printf(
-                    "1. Rut y Contraseña"
+                    "1. Rut y Contrasenya"
                 );
-
+                // Separar ingreso rut y contrasena o  especificar un formato de ingreso
+                // ej: RUT//CONTRASENA.
                 scanf("%ld", &selec2);
                 getchar();
 
+                // la confirmacion de usuario deberia estar fuera del siguiente sub-menu.
+                // sub menus se recomiendan esten en funcion aparte
+                // ejemplo: menu_usuario(usuario) en funciones.c o funciones main.c
                 switch (selec2)
                 {
                     case 1:
@@ -56,8 +64,8 @@ int main (void)
                         clean();
                         if (/*buscar_Us(arch,usuario == 1*/NULL){
                             system("cls");
-                            printf("Navegador Academico\n\n");
-                            printf(
+                            printf("Navegador Academico\n\n"
+
                                 "1. Mostrar datos Usuario\n"
                                 "2. Calculador de Notas\n"
                                 "3. Aprovacion y cursos\n"
@@ -129,7 +137,7 @@ int main (void)
                 break;
             case 2:
                 system("cls");
-                formulario();
+                formulario(careers);
                 getchar();
                 break;
             case 3:
