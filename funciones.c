@@ -10,19 +10,18 @@
 
 #define MAXCHAR 300
 #define MAXCOURSES 100
-/*
 typedef struct {
     char Nombre[MAXCHAR];
     char Contrasena[MAXCHAR];
     char Periodo[MAXCHAR];
-    TreeMap *Cursos;
+    List *Cursos;
 }Estudiante;
-
+/**/
 typedef struct {
-    char *NomCarrera;
-    TreeMap *Ramos;
+    char NomCarrera[MAXCHAR];
+    List *Ramos;
 }Carrera;
-*/
+
 typedef struct {
     char IDcurso[MAXCHAR]; // considerar eliminar
     char NomCurso[MAXCHAR];
@@ -235,7 +234,117 @@ HashMap * import_courses(void){ /* LISTO */
     return grafo;
 }
 
-void mostrarCurso(HashMap * g){
+Carrera * createCarrera(void){/* LISTO */
+    Carrera * new = (Carrera *)malloc(sizeof(Carrera));
+    if(new == NULL)
+    {
+        perror("No sepudo reservar memoria para carrera ");
+        exit(1);
+    }
+    new->Ramos = createList();
+    return new;
+}
+
+Carrera * copiarCarrera(Carrera * car){/* LISTO */
+    Carrera * copy = createCarrera();
+    strcpy(copy->NomCarrera, car->NomCarrera);
+    copy->Ramos = car->Ramos;
+    car->Ramos = NULL;
+
+    return copy;
+}
+
+void insertCourses(char * str, Carrera * car, HashMap * courses){ /* LISTO */
+    int i = 0, aux = 0;
+    char * c;
+
+    while(1){
+        const char * campo = get_csv_field(str, i);
+        if (campo==NULL) break;
+        i++;
+
+        char * final = _strdup(campo);
+        if( (c = strstr(final, "\n")) )
+            final[c-final] = '\0';
+            
+        Pair * hashPair = searchMap(courses, final);
+        if(hashPair){
+            Node * nodo = hashPair->value;
+             if(nodo){
+                pushBack(car->Ramos, nodo->InfoCurso);
+             }
+        }        
+    }
+}
+
+void mostrarCarreras(List * list){ /* Test */
+    Carrera * car = (Carrera*) firstList(list);
+    int cont = 0;
+    while(car!=NULL){
+        printf("%s\n", car->NomCarrera);
+
+        Curso * cur = (Curso *) firstList(car->Ramos);
+        while(cur!=NULL){
+            cont++;
+            printf("%d %s\n", cont, cur->IDcurso);
+            cur =(Curso*)nextList(car->Ramos);
+        }
+        printf("\n");
+
+        car=(Carrera*)nextList(list);
+        
+    }
+    printf("\n%d\n", cont);
+}
+
+List * import_carreras(HashMap * courses){/* LISTO */
+    FILE * entrada = NULL;
+    List * carreras;
+    Carrera * aux_carrera;
+
+    int start = 0, end = 0;
+    char str[MAXCHAR];
+
+    entrada = fopen("archivos/carreras.txt", "rt");
+    if (entrada==NULL){
+        perror("No se ha podido abrir el archivo, error fatal! :c\n");
+        exit(1);
+    }
+
+    carreras = createList();
+    aux_carrera = createCarrera();
+
+    while(fgets(str, MAXCHAR, entrada) != NULL){
+        // Lectura linea a linea
+        char * c;
+
+        // Copia la linea que contiene el nombre de la carrera, sin el fragmento
+        // "CARRERA:" en caso de encontrarse.
+        if ( ( c = strstr(str, "CARRERA:")) != NULL ){
+            strcpy(aux_carrera->NomCarrera, str+(c-str)+strlen("CARRERA:"));
+            printf("leido %s\n", aux_carrera->NomCarrera);
+        }        
+        if ( (c = strstr(str, "CURSOS:")) != NULL ){
+            start = 1;
+        }
+        if ( (c = strstr(str, "FIN CURSOS")) != NULL ){
+            start = 0;
+            end = 1;
+        }
+        if(start == 1){
+            insertCourses(str, aux_carrera, courses);
+        }
+        if (end == 1 && start == 0){
+            pushBack(carreras, copiarCarrera(aux_carrera));
+            aux_carrera->Ramos = createList();
+            end = 0;
+        }
+    }
+
+    return carreras;
+}
+
+void mostrarCurso(HashMap * g){ /* Test */
     int i = 1;
     Pair * par = firstMap(g);
     while(par != NULL){
@@ -259,7 +368,7 @@ void mostrarCurso(HashMap * g){
     }
 }
 
-int is_validuser(char * str){
+int is_validuser(char * str){ /* LISTO */
     int i;
     for(i=0 ; str[i] != '\0' && str[i] != '\n'; i++){
         if(isalpha(str[i]) == 0 && str[i] != ' ')
@@ -270,21 +379,26 @@ int is_validuser(char * str){
     return 1;
 }
 
-int set_username(char * user){
+int set_username(char * user){ /* LISTO */
     int intentos = 0;
     do{
         system("cls");
         printf( "====================================================\n"
-        "En primer lugar, establezca un nombre de usuario.\n"
+        "En primer lugar, establezca un nombre de usuario.\n\n"
+        
+        "Tenga en mente que su nombre de usuario SOLO puede tener contener letras, "
+        "por lo que caracteres especiales y numeros no seran aceptados.\n\n"
+
+        "Tambien necesita un minimo de 8 caracteres para ser valido.\n"
         "====================================================\n"
-        "\n\n Nombre de usuario: ");
+        "\n\nNombre de usuario: ");
 
         char user_imput[MAXCHAR];
 
         fgets(user_imput, MAXCHAR, stdin);
         clean();
 
-        if (intentos > 3){
+        if (intentos > 2){
             if(toselect(user_imput) != 0)
                break;
         }
@@ -309,11 +423,30 @@ int set_username(char * user){
     return 0;
 }
 
+Estudiante * create_student(){
+    Estudiante * newEst = (Estudiante*)malloc(sizeof(Estudiante));
+    if(newEst==NULL){
+        perror("No se pudo reservar memoria para nuevo estudiante ");
+        exit(1);
+    }
+    newEst->Cursos = createList();
+    return newEst;
+}
+
 void formulario(void){
-    system("cls");
+    /* PUSE ESTOS AQUI PA TESTEAR. !!!!!!<<<<<<<<<<<<<<<<<<< favor no borrar por el momento! ^_^UU - Ale
+    HashMap * courses =  import_courses();
+    List * careers = import_carreras(courses);
+    mostrarCarreras(careers);
+    getchar();*/
     char selec[10];
     char user_name[MAXCHAR]/*, user_career[MAXCHAR], user_period[10]*/;
+    Estudiante * new_user;
 
+    new_user = create_student();
+
+
+    system("cls");
     printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n"
            "Bienvenido estudiante!\n"
            "Muchas gracias por preferir nuestro navegador academico.\n\n"
@@ -321,7 +454,7 @@ void formulario(void){
            "A continuacion se le realizaran una serie de preguntas con tal de establecer\n"
            "su nueva cuenta en el sistema. Se le solicita que siga las instrucciones de forma\n"
            "responsable.\n\n Desea continuar? Escriba y para confirmar.\n" 
-           "\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
+           "\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
     fgets(selec, 10, stdin);
     to_minusc(selec);
@@ -332,13 +465,15 @@ void formulario(void){
     if (strcmp(selec, "y\n") != 0){
         printf("%s", selec);
         printf( "Es una pena! :(\n"
-                "Volviendo al menu principal...\n");
+                "Volviendo al menu principal...");
     }
     else{
         // Formulario por partes por orden. retorno de 0 significa que se ha cancelado el registro del usuario y se 
         // vuelve al menu principal
         if(set_username(user_name) == 0)
             return;
+        else
+            strcpy(new_user->Nombre, user_name);
 
         /*
         if(set_career(user_career) == 0)
