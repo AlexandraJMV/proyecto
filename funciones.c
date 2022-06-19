@@ -778,11 +778,11 @@ void verificarModificarBloque(char * day, HashMap * horario, int bloque){
         exit(1);
     }
 
-    Bloque * bloques = hashPair->value;
+    Bloque ** bloques = hashPair->value;
 
-    if(bloques[bloque-1].ocupado == 1){
+    if(bloques[bloque-1]->ocupado == 1){
         printf( "El bloque que usted ingreso se encuentra ocupado por la actividad: \n"
-                "%s.\n", bloques[bloque-1].actividad);
+                "%s.\n", bloques[bloque-1]->actividad);
         printf("\nDesea sobreescribir este bloque? Ingrese cualquier numero para confirmar. ");
 
         fgets(user_imput, MAXCHAR, stdin);
@@ -802,7 +802,7 @@ void verificarModificarBloque(char * day, HashMap * horario, int bloque){
             if(c) user_imput[c-user_imput] = '\0';
             clean();
 
-            strcpy(bloques[bloque-1].actividad, user_imput);
+            strcpy(bloques[bloque-1]->actividad, user_imput);
             printf("Su actividad ha sido insertada de forma exitosa.\nVolviendo a menu principal...");
             return;
         }
@@ -814,8 +814,8 @@ void verificarModificarBloque(char * day, HashMap * horario, int bloque){
         if(c) user_imput[c-user_imput] = '\0';
         clean();
 
-        strcpy(bloques[bloque-1].actividad, user_imput);
-        bloques[bloque-1].ocupado = 1;
+        strcpy(bloques[bloque-1]->actividad, user_imput);
+        bloques[bloque-1]->ocupado = 1;
         printf("Su actividad ha sido insertada de forma exitosa.\nVolviendo a menu principal...");
         return;
     }
