@@ -20,7 +20,7 @@ typedef struct {
     char Nombre[MAXCHAR];
     char Contrasena[MAXCHAR];
     char Periodo[MAXCHAR];
-    Carrera * Carrera;
+    char Carrera[MAXCHAR];
     List *Cursos;
 }Estudiante;
 
@@ -435,10 +435,25 @@ Estudiante * create_student(){ /* LISTO */
     return newEst;
 }
 
-int set_career(List * cars, Estudiante * user){
+void * posList(List * list, int pos){/* LISTO */
+    int cont=0;
+    void* data = firstList(list);
+    while (data!=NULL)
+    {
+        cont++;
+        if(cont==pos){
+            return data;
+        }
+        data = nextList(list);
+    }
+    return NULL;
+}
+
+int set_career(List * cars, Estudiante * user){/* LISTO */
     int cont = 0, select;
     char user_input[MAXCHAR];
 
+    system("cls");
     printf( "==========================================\n"
             "A continuacion se le presentaran las carreras disponibles en \n"
             "dentro del navegador. Por favor, elija aquella a la que pertenezca.\n"
@@ -463,26 +478,123 @@ int set_career(List * cars, Estudiante * user){
     fgets(user_input, MAXCHAR, stdin);
     select = toselect(user_input);
 
-    if(select > cont || select<cont){
+    if(select > cont){
         system("cls");
         printf("\n Volviendo al menu principal...");
         clean();
         return 0;
     }
     else{
-        printf("^_^)b\n");
+        Carrera * auxcar = (Carrera*) posList(cars, select);
+        if(auxcar)
+            strcpy(user->Carrera, auxcar->NomCarrera);
     }
-
     clean();
     return 1;
 }
 
+int comprobarMaxPeriodo(char * str, List * carr){
+    int max = 0, n;
+    Carrera * auxCar = (Carrera*)firstList(carr);
+    while (auxCar!=NULL)
+    {
+        if(strstr(auxCar->NomCarrera, str))
+            break;
+        auxCar = (Carrera*)nextList(carr);
+    }
+
+    if (auxCar == NULL) return 0;
+
+    Curso * course = (Curso*)firstList(auxCar->Ramos);
+    while(course!=NULL){
+        if((n = toselect(course->Periodo))>max)
+            max = n;
+        course=(Curso*)nextList(auxCar->Ramos);
+    }
+
+    return max;
+}
+
+int set_period(Estudiante * user, List * carreras){ // Falta comprobar que el periodo exista dentro de la carrera.
+    char user_imput[MAXCHAR];
+    int comprobar_num, max_period;
+    char * p;
+    system("cls");
+    printf( "===================================================\n"
+            "A continuacion, seleccione el periodo (semestre) al cual pertenece.\n"
+            "Por favor, respete este formato:\n"
+            
+            "\n            <numero periodo>\n\n"
+
+            "En caso de ingresarse un numero no valido, se le mandara al menu de inicio.\n"
+            "Nota: no ingrese los simbolos < o >\n"
+            "===================================================\n");
+    
+    fgets(user_imput, MAXCHAR, stdin);
+    p = strstr(user_imput, "\n");
+    if(p)
+        user_imput[p-user_imput] = '\0';
+    
+    comprobar_num = toselect(user_imput);
+    max_period = comprobarMaxPeriodo(user->Carrera, carreras);
+
+    if (comprobar_num>max_period && max_period != 0){
+        system("cls");
+        printf( "El periodio que ha ingresado no es valido!\n"
+                "Volviendo al menu principal...");
+        clean();
+        return 0;
+    } 
+    else if(comprobar_num != 0)
+        strcpy(user->Periodo, user_imput);
+    else{
+        system("cls");
+        printf("Volviendo al menu principal...");
+        clean();
+        return 0;
+    }
+    
+    clean();
+    return 1;
+}
+
+int modify_courses(Estudiante * student, List * careers){
+    char user_input[MAXCHAR];
+    int num_imput;
+
+    system("cls");
+    printf( "+==============================================================+\n"
+            "| A continuacion, se le preguntara si esta cursando los cursos |\n"
+            "| pertenecientes a su periodo.                                 |\n"
+            "|                                                              |\n"
+            "| Para aquellos cursos que no este cursando, se le preguntara  |\n"
+            "| por aquellos cursos que le preceden.                         |\n"
+            "|                                                              |\n"
+            "| > Ingrese cualquier numero distinto de 0 para continuar.     |\n"
+            "+==============================================================+\n\n\n");
+    
+    fgets(user_input, MAXCHAR, stdin);
+    num_imput = toselect(user_input);
+
+    if(num_imput == 0){
+        printf( "No ha ingresado un numero!\n"
+                "Se le devolvera al menu principal.");
+        clean();
+        return 0;
+    }
+
+    
+
+    clean();
+    return 0;
+}
+
 void formulario(List * careers){
-
-    char selec[10];
-    char user_name[MAXCHAR], user_career[MAXCHAR]/*, user_period[10]*/;
     Estudiante * new_user;
-
+    char selec[10];
+    char user_name[MAXCHAR];
+    int confirm;
+    
     new_user = create_student();
 
     system("cls");
@@ -492,17 +604,16 @@ void formulario(List * careers){
 
            "A continuacion se le realizaran una serie de preguntas con tal de establecer\n"
            "su nueva cuenta en el sistema. Se le solicita que siga las instrucciones de forma\n"
-           "responsable.\n\nDesea continuar? Escriba y para confirmar.\n" 
+           "responsable.\n\nDesea continuar? Escriba cualquier numero para confirmar.\n" 
            "\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
     fgets(selec, 10, stdin);
-    to_minusc(selec);
+    confirm = toselect(selec);
     clean();
 
     system("cls");
 
-    if (strcmp(selec, "y\n") != 0){
-        printf("%s", selec);
+    if (confirm == 0){
         printf( "Es una pena! :(\n"
                 "Volviendo al menu principal...");
     }
@@ -515,20 +626,14 @@ void formulario(List * careers){
             return;
         if(set_career(careers, new_user) == 0)
             return;
+        if(set_period(new_user, careers) == 0)
+            return;
+        if(modify_courses(new_user, careers) == 0)
+            return;
 
         /*
-        if(set_career(user_career) == 0)
-            return;
-
-        if(set_period(user_period) == 0)
-            return;
-        
-        if(modify_courses(user_career) == 0)
-            return;
-        
         if(set_horario(user_career) == 0)
             return;
-        
         set_password();
         */
 
