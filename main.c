@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "hashmap.h"
 #include "funciones.h"
@@ -23,7 +24,7 @@ int main (void)
         long selec2;
         long selec3;
         long selec4;
-        char arch[MAX] = "";
+        char arch[MAXCHAR] = "";
 
         system("cls");
         printf("----Navegador Academico----\n\n"
@@ -140,12 +141,16 @@ int main (void)
                 break;
             case 2:
                 system("cls");
-                if((new_user = formulario(careers, courses)))
+                if((new_user = formulario(careers, courses))){
                     pushBack(users, new_user);
+                    insert_archUsuarios(new_user);
+                }
+                
                 getchar();
                 break;
             case 3:
                 system("cls");
+                export_infoUsuarios(users);
                 puts("Saliendo del programa...");
                 getchar();
                 return 0;
