@@ -10,10 +10,13 @@
 int main (void)
 {
     // Importar datos base para funcionamiento del programa.
-    HashMap * courses =  import_courses();
+    List * users = createList();
+    HashMap * courses =  import_courses(); //CONTIENE CURSOS Y SUS DEPENDENCIAS EN NODOS.
     List * careers = import_carreras(courses);
+    
 
     while (1){
+        Estudiante * new_user;
 
         char strselec[10];
         int numselec;
@@ -137,7 +140,8 @@ int main (void)
                 break;
             case 2:
                 system("cls");
-                formulario(careers);
+                if((new_user = formulario(careers, courses)))
+                    pushBack(users, new_user);
                 getchar();
                 break;
             case 3:

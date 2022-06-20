@@ -7,7 +7,7 @@ FIN 100-XXX,DESARROLLO INTEGRAL Y COMUNICACIoN PARA INGENIERiA,"1,2",Sin Prerreq
 ICD 1342,Fundamentos de Programacion,2,ICD 1341,Ingenieria Aplicada: Ciencias de la computacion
 MAT 1002,CaLCULO DIFERENCIAL E INTEGRAL,2,MAT 1001,Ciencias Basicas y Matematicas
 MAT 1004,aLGEBRA LINEAL,2,MAT 1001,Ciencias Basicas
-FIS 1002,FiSICA PARA INGENIERiA,2,MAT 1001,Ciencias Basicas
+FIS 1002,FiSICA PARA INGENIERiA,3,MAT 1001,Ciencias Basicas
 ICD 2243,Introduccion al Analisis de Datos,3,"ICD 1140,MAT 1004",Ingenieria Aplicada: Aprendizaje Automatico
 ICD 2344,Estructura de Datos,3,ICD 1342,Ingenieria Aplicada: Ciencias de la Computacion
 MAT 1003,CaLCULO EN VARIAS VARIABLES,3,MAT 1002,Ciencias Basicas y Matematicas

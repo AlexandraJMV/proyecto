@@ -3,7 +3,18 @@
 #include "hashmap.h"
 #include "list.h"
 
-//typedef struct Estudiante;
+#define MAXCHAR 300
+#define MAXCOURSES 100
+#define TALLAHORARIO 15
+
+typedef struct {
+    char Nombre[MAXCHAR];
+    char Contrasena[MAXCHAR];
+    char Periodo[MAXCHAR];
+    char Carrera[MAXCHAR];
+    List *Cursos;
+    HashMap * Horario;
+}Estudiante;
 
 //typedef struct Carrera Carrera;
 
@@ -11,10 +22,11 @@
 
 //typedef struct Evaluacion;
 
-void formulario(List * careers);
+Estudiante * formulario(List * careers, HashMap * cursos);
 void clean(void);
 int toselect(char * str);
 HashMap * import_courses(void);
 List * import_carreras(HashMap * courses);
+void mostrarCurso(HashMap * g);
 
 #endif
