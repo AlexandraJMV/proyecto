@@ -1137,4 +1137,11 @@ Estudiante * formulario(List * careers, HashMap * cursos){ /* EN PROGRESO */
     return new_user;
 }
 
+
+void Buscar_Us(char *t, Estudiante * user){
+        
+}
+void Mostrar_datos(Estudiante * user){
+
+}
 /* fin funciones */
