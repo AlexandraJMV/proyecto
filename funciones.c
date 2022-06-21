@@ -5,15 +5,14 @@
 
 #include "hashmap.h"
 #include "list.h"
-#include "tdas/treemap.h"
 #include "funciones.h"
 
-typedef struct {
+typedef struct Carrera{
     char NomCarrera[MAXCHAR];
     List *Ramos;
 }Carrera;
 
-typedef struct {
+typedef struct Curso{
     char IDcurso[MAXCHAR]; // considerar eliminar
     char NomCurso[MAXCHAR];
     char Periodo[MAXCHAR];
@@ -30,13 +29,13 @@ typedef struct {
     float *pctjPresentacion;
 }Evaluacion;
 */
-typedef struct{
+typedef struct Node{
     char IDCurso[MAXCHAR];
     Curso * InfoCurso;
     List* Requisitos;
 } Node;
 
-typedef struct{
+typedef struct Bloque{
     char actividad[MAXCHAR];
     int modificable;
     int ocupado;
@@ -234,7 +233,7 @@ HashMap * import_courses(void){ /* Semi COMENTADO */
     }
 
 
-    
+    fclose(entrada);
     return grafo;
 }
 
@@ -348,7 +347,7 @@ List * import_carreras(HashMap * courses){/* LISTO */
             end = 0;
         }
     }
-
+    fclose(entrada);
     return carreras;
 }
 
@@ -407,6 +406,8 @@ int set_username(char * user){ /* COMENTADO */
         char user_imput[MAXCHAR];
 
         fgets(user_imput, MAXCHAR, stdin);
+        char * c = strstr(user_imput, "\n");
+        if(c) user_imput[c-user_imput] = '\0';
         clean();
 
         if (intentos > 2){
@@ -740,18 +741,18 @@ int printDiaHorario(char * day, HashMap * horario){ /* COMENTADO */
         day[0] = toupper(day[0]);
         Bloque ** bloques = hashPair->value;
 
-        printf( "+----------------------------+\n"
-                "|%30s|\n"
-                "+----------------------------+\n", day);
+        printf( "+-------------------------------+\n"
+                "|       %15s          |\n"
+                "+-------------------------------+\n", day);
         
         for(int i=0 ; i<TALLAHORARIO ; i++){
             printf("%-2d- ", i+1);
             if(bloques[i]->ocupado==1)
-                printf( "|%-20s|\n", bloques[i]->actividad);
+                printf( "|  %-26s|\n", bloques[i]->actividad);
             else
                 printf("|           libre            |\n");
         }
-        printf("----------------------\n");
+        printf("----------------------------------\n");
     }
     else{
         return 0;
@@ -919,7 +920,8 @@ void lock_horario(HashMap * horario){ /* COMENTADO */
         Bloque ** bloques = par->value;
 
         for(int k=0; k<TALLAHORARIO ; k++){
-            bloques[k]->modificable = 0;
+            if(bloques[k]->ocupado == 1)
+                bloques[k]->modificable = 0;
         }
     }
 
@@ -1080,7 +1082,7 @@ int set_password(Estudiante * user){ /* COMENTADO */
     return 0;
 }
 
-Estudiante * formulario(List * careers, HashMap * cursos){ /* EN PROGRESO */
+Estudiante * formulario(List * careers, HashMap * cursos){ /* LISTOOO */
     Estudiante * new_user;
     char selec[10];
     char user_name[MAXCHAR];
@@ -1137,11 +1139,265 @@ Estudiante * formulario(List * careers, HashMap * cursos){ /* EN PROGRESO */
     return new_user;
 }
 
+void insert_archUsuarios(Estudiante * user){ /* LISTO */
+    FILE * entrada;
 
-void Buscar_Us(char *t, Estudiante * user){
+    entrada = fopen("archivos/usuarios.csv", "at");
+    if(entrada == NULL){
+        perror("Error al abrir archivo usuarios ");
+        exit(1);
+    }
+
+    fprintf(entrada, "%s,%s\n", user->Nombre, user->Contrasena);
+    fclose(entrada);
+    return;
+}
+
+void toFormat(char * str){ /* LISTO */
+    int len = strlen(str);
+    for(int  i=0 ; i<len ; i++){
+        if(str[i]==' ') str[i]='_';
+    }
+}
+
+void write_Courses(FILE * salida, List * courses){ /* LISTO*/
+    int coma=0;
+
+    fprintf(salida, "%s\n", "CURSOS");
+
+    Curso * course = (Curso*)firstList(courses);
+    while(course != NULL){
+        if(coma > 0)
+            fprintf(salida, "%s", ",");
+
+        fprintf(salida,"%s",course->IDcurso);
+
+        coma++;
+        course = (Curso*)nextList(courses);
+    }
+
+    fprintf(salida, "%s\n", "\nFIN CURSOS");
+
+    return;
+}
+
+void write_Horario(FILE *salida, HashMap *  horario){/* LISTO */
+
+    char dias[MAXCHAR] = "lunes,martes,miercoles,jueves,viernes,sabado,domingo";
+    fprintf(salida, "%s\n", "HORARIO");
+
+    for(int i= 0; i<7 ; i++){
+        const char * campo = get_csv_field(dias, i);
+
+        Pair * hashPair = searchMap(horario, (char*)campo);
+        if(hashPair==NULL){
+            printf("Error en buscar dia en horario cunado se sabe que existe\n");
+            exit(1);
+        }
+
+        Bloque ** bloques = hashPair->value;
+        int coma = 0;
+        fprintf(salida, "%s,\"", campo);
+        for(int k=0 ; k<TALLAHORARIO; k++){
+            Bloque * b = bloques[k];
+            if (coma>0)
+                fprintf(salida,"%s",",");
+            fprintf(salida, "%s,%d,%d", b->actividad, b->modificable, b->ocupado);
+            coma++;
+        }
+        fprintf(salida,"%s", "\"\n");
+    }
+    fprintf(salida,"%s\n", "FIN HORARIO");
+
+    return;
+}
+
+void write_studentInfo(Estudiante *student, FILE * salida){/* En progreso */
         
-}
-void Mostrar_datos(Estudiante * user){
+        for(int campo = 1; campo<7 ; campo++){
+            if(campo==1)
+                fprintf(salida, "%s\n", student->Nombre);
 
+            if(campo==2)
+                fprintf(salida, "%s\n", student->Contrasena);
+            
+            if(campo==3)
+                fprintf(salida, "%s\n", student->Carrera);
+            
+            if (campo==4)
+                fprintf(salida, "%s\n", student->Periodo);
+            
+            if(campo==5)
+                write_Courses(salida, student->Cursos);
+
+            if(campo==6)
+                write_Horario(salida, student->Horario);
+        }
+
+        fclose(salida);
+
+        return;
 }
-/* fin funciones */
+
+void export_infoUsuarios(List * users){ /* LISTO */
+
+    Estudiante * student = (Estudiante*)firstList(users);
+    while(student != NULL){
+        // Nombre del archivo corresponde al nombre del usuario 
+        // con los espacios reemplazados por _.
+        char path[MAXCHAR] = "archivos/info_usuarios/";
+        char auxnom[MAXCHAR];
+
+        strcpy(auxnom, student->Nombre);
+        toFormat(auxnom);
+        strcat(path, auxnom);
+        strcat(path, ".txt");
+
+        FILE * salida = fopen(path, "wt");
+        if(salida == NULL){
+            perror("No se pudo abrir o crear el archivo ");
+            exit(1);
+        }
+
+        write_studentInfo(student, salida);
+
+        fclose(salida);
+
+        student = (Estudiante*)nextList(users);
+    }
+
+    return;
+}
+
+void readInsert_courses(Estudiante * user,  FILE * imput, HashMap * courses){
+
+    char linea[MAXCHAR*2];
+    const char * campo;
+    
+
+    while(fgets(linea, MAXCHAR*2 , imput) != NULL){
+        char * c = strstr(linea,"\n");
+        if(c) linea[c-linea] = '\0';
+
+        if(strcmp(linea, "FIN CURSOS")==0) break;
+
+        campo = get_csv_field(linea, 0);
+        for(int i=1; campo != NULL ; i++){
+            Pair * hashPair = searchMap(courses,(char*) campo);
+            if(hashPair==NULL){
+                printf("Error busqueda en readInsert\n");
+                exit(1);
+            }
+
+            Node * nodo = hashPair->value;
+            pushBack(user->Cursos, nodo->InfoCurso);
+            
+            campo = get_csv_field(linea,i);
+        }
+    }
+
+    return;
+}
+
+void readInsertBloques(Bloque ** arrBloques, char * linea){    
+    int i = 0, j = 0;
+
+    const char * campo = get_csv_field(linea, i);
+    while(campo != NULL){
+        if(i%3 == 0)
+            strcpy(arrBloques[j]->actividad, (char*)campo);
+        if(i%3 == 1)
+            arrBloques[j]->modificable = atoi(campo);
+        if(i%3 == 2){
+            arrBloques[j]->ocupado = atoi(campo);
+            j++;
+        }
+        i++;
+
+        campo = get_csv_field(linea, i);
+    }
+}
+
+void read_horario(Estudiante * user, FILE * imput){
+    char linea[MAXCHAR*2];
+    HashMap * horario = createHorario();
+    
+    while(fgets(linea, MAXCHAR*2 , imput) != NULL){
+        Pair * hashPair;
+        char *c = strstr(linea, "\n");
+        if(c) linea[c-linea] = '\0';
+
+        if(strcmp(linea, "FIN HORARIO")==0) break;
+
+        for(int i=0 ; i<2 ; i++){
+            const char * campo = get_csv_field(linea, i);
+
+            if(i==0){
+                to_minusc((char*)campo);
+                hashPair = searchMap(horario, (char*)campo);
+                if(hashPair == NULL){
+                    printf("No se ha encontrado archivo que deberia encontrarse :(??");
+                    exit(1);
+                }
+            }
+            if(i==1){ 
+                readInsertBloques(hashPair->value, (char*)campo);
+            }
+        }
+    }
+
+    user->Horario = horario;
+    horario = NULL;
+    free(horario);
+    return;
+}
+
+Estudiante * import_infoUsuario(char * nombre, HashMap * courses){
+    FILE * entrada;
+    char path[MAXCHAR] = "archivos/info_usuarios/";
+    char linea[MAXCHAR*2];
+    int campo = 1;
+    
+    Estudiante * old_student = create_student();
+    
+    toFormat(nombre);
+    strcat(path, nombre);
+    strcat(path, ".txt");             
+    
+    
+    entrada = fopen(path, "rt");
+    if (entrada == NULL){
+        perror("Error path ");
+        exit(1);
+    }
+    
+    while(fgets(linea, MAXCHAR*2 , entrada) != NULL){
+        
+        char * c = strstr(linea,"\n");
+        if(c) linea[c-linea] = '\0';
+
+        if(campo==1)
+            strcpy(old_student->Nombre, linea);
+        
+        if(campo==2)
+            strcpy(old_student->Contrasena, linea);
+        
+        if (campo==3)
+            strcpy(old_student->Carrera, linea);
+        
+        if(campo==4)
+            strcpy(old_student->Periodo, linea);
+        
+        if(campo==5)
+            readInsert_courses(old_student, entrada, courses);
+
+        if(campo==6)
+            read_horario(old_student, entrada);
+        campo++;
+    }
+
+    fclose(entrada);
+
+    return old_student;
+}
+/*fin funciones */

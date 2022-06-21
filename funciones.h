@@ -5,7 +5,7 @@
 
 #define MAXCHAR 300
 #define MAXCOURSES 100
-#define TALLAHORARIO 15
+#define TALLAHORARIO 14
 
 typedef struct {
     char Nombre[MAXCHAR];
@@ -21,7 +21,9 @@ typedef struct {
 //typedef struct Curso;
 
 //typedef struct Evaluacion;
-
+Estudiante * import_infoUsuario(char * nombre, HashMap * courses);
+void insert_archUsuarios(Estudiante * user);
+void export_infoUsuarios(List * users);
 Estudiante * formulario(List * careers, HashMap * cursos);
 /*----------------------------------------------------------*/
 void clean(void);
