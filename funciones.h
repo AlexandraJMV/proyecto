@@ -25,10 +25,19 @@ Estudiante * import_infoUsuario(char * nombre, HashMap * courses);
 void insert_archUsuarios(Estudiante * user);
 void export_infoUsuarios(List * users);
 Estudiante * formulario(List * careers, HashMap * cursos);
+/*----------------------------------------------------------*/
 void clean(void);
+/*----------------------------------------------------------*/
 int toselect(char * str);
+/*----------------------------------------------------------*/
 HashMap * import_courses(void);
+/*----------------------------------------------------------*/
 List * import_carreras(HashMap * courses);
+/*----------------------------------------------------------*/
 void mostrarCurso(HashMap * g);
-
+/*----------------------------------------------------------*/
+void Buscar_Us(char *t, Estudiante * user);
+/*----------------------------------------------------------*/
+void Mostrar_datos(Estudiante * user);
+/*----------------------------------------------------------*/
 #endif
