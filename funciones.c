@@ -1560,6 +1560,44 @@ void utilidad_horario(Estudiante * user){
 
     }
     return;
+/* funcion calculadora notas ponderadas
+
+    desc:   CASO A(NO POSEE TODAS SUS NOTAS)
+            -usuario inserta numero de notas
+            -usuario inserta promedio de aprobacion 
+            -usuario ingresa sus notas y porcentaje de cada nota n veces 
+            -se le da al usuario la nota que debe sacarse para aprobar
+            
+            CASO B(POSEE TODAS SUS NOTAS)
+            -usuario inserta numero de notas
+            -usuario inserta promedio de aprobacion 
+            -usuario ingresa sus notas y porcentaje de cada nota n veces
+            -usuario ingresa porcentaje que vale el examen 
+*/
+void Calculadora_notas(){
+    int NNotas;
+    int aprob;
+    long selec;
+
+
+    system("cls");
+    printf("+=================================================================================+\n"
+           "| Bienvenido a la calculadora de notas ponderadas!                                |\n"
+           "|                                                                                 |\n"
+           "| Selecciona la opcion que necesites:                                             |\n"
+           "|                                                                                 |\n"
+           "| 1.Si posees todas tu notas en el curso.                                         |\n"
+           "| 2.Si no posees todas tus notas, pero deseas saber la que necesitas para aprobar.|\n"
+           "|                                                                                 |\n" 
+           "+=================================================================================+\n");
+    scanf("%ld", &selec);
+    clean();
+    /*
+    switch(selec){
+            case 1:
+
+            case 2:*/
 }
+
 
 /*fin funciones */
