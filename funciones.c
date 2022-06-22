@@ -6,6 +6,7 @@
 #include "hashmap.h"
 #include "list.h"
 #include "funciones.h"
+#include "funcionesmain.h"
 
 typedef struct Carrera{
     char NomCarrera[MAXCHAR];
@@ -329,7 +330,6 @@ List * import_carreras(HashMap * courses){/* LISTO */
         // "CARRERA:" en caso de encontrarse.
         if ( ( c = strstr(str, "CARRERA:")) != NULL ){
             strcpy(aux_carrera->NomCarrera, str+(c-str)+strlen("CARRERA:"));
-            printf("leido %s\n", aux_carrera->NomCarrera);
         }        
         if ( (c = strstr(str, "CURSOS:")) != NULL ){
             start = 1;
@@ -855,18 +855,25 @@ void verificarModificarBloque(char * day, HashMap * horario, int bloque){ /* LIS
     to_minusc(day);
     Pair * hashPair = searchMap(horario, day);
     if(hashPair==NULL){
-        printf("Error enn verificar bloque\n");
+        printf("Error en verificar bloque\n");
         exit(1);
     }
 
     Bloque ** bloques = hashPair->value;
 
+    if(bloques[bloque-1]->modificable == 0){
+        printf( "Este bloque no es modificable!\n"
+                "Por favor, seleccione otro la proxima ocasion!\n");
+        getchar();
+        return;
+    }
+
     if(bloques[bloque-1]->ocupado == 1){
         printf( "El bloque que usted ingreso se encuentra ocupado por la actividad: \n"
                 "%s.\n", bloques[bloque-1]->actividad);
         printf( "\nDesea sobreescribir o eliminar este bloque?\n."
-                "Ingrese un numero menor o igual a 10 para sobreescribir\n"
-                "Ingrese un numero mayor que 10 para eliminar\n");
+                "Ingrese un numero mayor a 10 para sobreescribir\n"
+                "Ingrese un numero menor o igual que 10 para eliminar\n");
 
         fgets(user_imput, MAXCHAR, stdin);
         clean();
@@ -1353,6 +1360,7 @@ void read_horario(Estudiante * user, FILE * imput){
 }
 
 Estudiante * import_infoUsuario(char * nombre, HashMap * courses){
+
     FILE * entrada;
     char path[MAXCHAR] = "archivos/info_usuarios/";
     char linea[MAXCHAR*2];
@@ -1365,8 +1373,10 @@ Estudiante * import_infoUsuario(char * nombre, HashMap * courses){
     strcat(path, ".txt");             
     
     
+    
     entrada = fopen(path, "rt");
     if (entrada == NULL){
+        printf("nombre es %s\n", nombre);
         perror("Error path ");
         exit(1);
     }
@@ -1400,4 +1410,156 @@ Estudiante * import_infoUsuario(char * nombre, HashMap * courses){
 
     return old_student;
 }
+
+List * import_allUsers(HashMap * courses){
+    char path[MAXCHAR] = "archivos/usuarios.csv";
+    List * usuarios = createList();
+    Estudiante * usuarioLeido;
+    char linea[MAXCHAR];
+    FILE * entrada;
+    int i = 0;
+
+    entrada = fopen(path,"rt");
+    if(entrada==NULL){
+        printf("Error path usuarios.");
+        exit(1);
+    }
+
+    while(fgets(linea, MAXCHAR, entrada) != NULL){
+        const char * campo = get_csv_field(linea, i);
+
+        usuarioLeido = import_infoUsuario((char*) campo, courses);
+        if(usuarioLeido) {
+            pushBack(usuarios, usuarioLeido);
+        }
+    }
+    return usuarios;
+}
+
+Estudiante *  comprobar_user(List * usuarios, char * user_imput){
+
+    Estudiante * estLeido = (Estudiante*) firstList(usuarios);
+    while (estLeido != NULL)
+    {
+        const char * user = get_csv_field(user_imput,0);
+        const char * contr = get_csv_field(user_imput,1);
+
+        if(strcmp(user , estLeido->Nombre) == 0 
+        && strcmp(contr, estLeido->Contrasena) == 0)
+            return estLeido;
+
+        estLeido = (Estudiante*) nextList(usuarios);
+    }
+
+    return NULL;
+
+ }
+
+ int comprobar_Formato(char * imput){
+    char * tieneComa = strstr(imput,",");
+    if(tieneComa) return 1;
+    else return 0;
+ }
+
+void menu_usuario(List * usuarios, HashMap * cursos, List * carreras){
+    while(1){
+        system("cls");
+        puts("Ingrese usuario y contrasenya separados por una coma, sin espacio luego de la coma\n"
+            "Ejemplo: Nombre de usuario,contrasena");
+        
+   
+        char user_imput[MAXCHAR];
+        Estudiante * estudianteIngresado;
+
+        fgets(user_imput, MAXCHAR, stdin);
+        char * c = strstr(user_imput, "\n");
+        if(c) user_imput[c-user_imput] = '\0';
+        clean();
+
+        if(comprobar_Formato(user_imput)==0){
+            printf( "No ha ingresado una cadena con el formato pedido\n"
+                    "Vuelva a intentarlo!");
+            getchar();
+        }
+        else{
+            if ( (estudianteIngresado = comprobar_user(usuarios,user_imput)) ){
+                utilidad_ap(estudianteIngresado);
+                return;
+            }
+            else
+            {
+                system("cls");
+                printf( "Al parecer este nombre de usuario o contrasena no existen.\n"
+                        "Ingrese cualquier numero mayor a 0 para intentar nuevamente: ");
+
+                fgets(user_imput, MAXCHAR, stdin);
+
+                if(toselect(user_imput) == 0){
+                    printf("\n\nNo ha ingresado un numero mayor a 0.\nVolviendo al menu principal...");
+                    clean();
+
+                    return;
+                }
+                clean();
+            } 
+        }
+    }
+}
+
+void utilidad_horario(Estudiante * user){
+    while(1){
+        char user_imput[MAXCHAR];
+        int bloque;
+
+        system("cls");
+        printf("Bienvenido a su horario\n\n");
+
+        printSemanaHorario(user->Horario);
+
+        printf( "Puede entrar a algun dia para ver o modificar su horario!\n"
+                "Si desea volver al menu anterior, ingrese la cadena \"fin\"\n"
+                "Ingrese el nombre de un dia para modificar ese fragento: ");
+
+        fgets(user_imput, MAXCHAR, stdin);
+        char * c = strstr(user_imput, "\n");
+        if(c) user_imput[c-user_imput] = '\0';
+        clean();
+
+
+        if(strcmp(user_imput, "fin")==0)
+        {
+            system("cls");
+            printf("Volviendo al menu principal...");
+            break;
+        }
+
+        system("cls");
+
+        if (printDiaHorario(user_imput, user->Horario)==0){
+            printf("No se econtro el dia en la impresion de dias!\n");
+            getchar();
+        }
+        else{
+            char copyDia[50];
+            strcpy(copyDia, user_imput);
+
+            printf("Seleccione algun bloque para ingresar/borrar alguna actividad: ");
+
+            fgets(user_imput, MAXCHAR, stdin);
+            char * c = strstr(user_imput, "\n");
+            if(c) user_imput[c-user_imput] = '\0';
+
+            bloque = toselect(user_imput);
+            if (bloque==0 || bloque > TALLAHORARIO){
+                printf("\nEl bloque ingresado no es valido.\nVolviendo a horario semanal...");
+            }
+            else 
+                verificarModificarBloque(copyDia, user->Horario, bloque);
+            clean();
+            }
+
+    }
+    return;
+}
+
 /*fin funciones */
