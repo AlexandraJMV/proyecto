@@ -27,7 +27,7 @@ void insert_archUsuarios(Estudiante * user);
 
 void export_infoUsuarios(List * users);
 
-Estudiante * formulario(List * careers, HashMap * cursos);
+Estudiante * formulario(List * careers, HashMap * cursos, List * users);
 
 void clean(void);
 
@@ -49,7 +49,7 @@ Estudiante *  comprobar_user(List * usuarios, char * user_imput);
 
 int comprobar_Formato(char * imput);
 
-void menu_usuario(List * usuarios, HashMap * cursos, List * carreras);
+void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras);
 
 void utilidad_horario(Estudiante * user);
 

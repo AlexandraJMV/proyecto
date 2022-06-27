@@ -6,7 +6,6 @@
 #include "hashmap.h"
 #include "list.h"
 #include "funciones.h"
-#include "funcionesmain.h"
 
 typedef struct Carrera{
     char NomCarrera[MAXCHAR];
@@ -31,9 +30,9 @@ typedef struct {
 }Evaluacion;
 */
 typedef struct Node{
-    char IDCurso[MAXCHAR];
-    Curso * InfoCurso;
+    Curso * curso;
     List* Requisitos;
+    List * Subsiguientes;
 } Node;
 
 typedef struct Bloque{
@@ -43,7 +42,6 @@ typedef struct Bloque{
 }Bloque;
 
 /*  funciones */
-
 int toselect(char * str){ /* LISTO */
     for(long i=0 ; str[i] != '\0' ; i++)
     {
@@ -123,8 +121,9 @@ Node * create_graphNode(void){ /* COMENTADO */
         perror("Error al crear nodo para grafos. ");
         exit(1);
     }
+    nodo->Subsiguientes = createList();
     nodo->Requisitos = createList();
-    nodo->InfoCurso = createCourse();
+    nodo->curso = createCourse();
     return nodo;
 }
 
@@ -140,33 +139,39 @@ void to_minusc(char * str){ /* COMENTADO */
 
 void set_requisitos(const char *requstr, Node * node, HashMap * grafoCursos){ /* LISTO */
     int i = 0;
+    Node * nodo;
     while(1){
-        // Obtencion de requisitos y control de ciclo
+        // Obtencion de requisitos y control de ciclo.
         const char * campo = get_csv_field((char*)requstr, i);
         if (campo==NULL) break;
         i++;
 
-        // Agregar requisito a lista de requisitos por nodo.
-        // Verificar que nodo exista en grafo. Si existe se adjunta el nodo. 
-        // Si no, se crea el nodo y se inserta (Solamente contiene el ID)
-        Pair * hashPair = searchMap(grafoCursos, (char*)campo);
-        if(hashPair){
-            pushBack(node->Requisitos, hashPair->value);
-        }
-        else if(strcmp(campo, "Sin Prerrequisitos")==0){
+        // Caso sin requisitos.
+        if(strcmp(campo, "Sin Prerrequisitos")==0){
             continue;
         }
+        // Agregar cadenas de requisitos en lista.
         else{
-            Curso * course = createCourse();
-            Node * newNodo = create_graphNode();
+            pushBack(node->Requisitos, _strdup(campo));
 
-            strcpy(course->IDcurso, campo);
-            strcpy(newNodo->IDCurso, campo);
-            newNodo->InfoCurso = course;
+            // Agregar a  cada curso leido como requisito, el curso subsiguiente.
+            // Crear nodo para grafo si no existe. Despues se rellenaran los campos.
 
-            pushBack(node->Requisitos, newNodo);
-        } 
+            Pair * hashPair = searchMap(grafoCursos,(char*) campo);
+            if(hashPair){
+                nodo = hashPair->value;
+                pushBack(nodo->Subsiguientes, _strdup(node->curso->IDcurso));
+            }
+            else{
+                
+                nodo = create_graphNode();
+                strcpy(nodo->curso->IDcurso, campo);
+                pushBack(nodo->Subsiguientes, node->curso->IDcurso);
+                insertMap(grafoCursos, _strdup(campo), nodo);
+            }
+        }
     }
+
     return;
 }
 
@@ -206,11 +211,11 @@ HashMap * import_courses(void){ /* Semi COMENTADO */
                     if(hashPair){
                         // Se debe acceder al curso contenido en el nodo.
                         graphNode = hashPair->value;
-                        course = graphNode->InfoCurso;
+                        course = graphNode->curso;
                     }
                     else{
                         strcpy(course->IDcurso, campo);
-                        strcpy(nodo->IDCurso, campo);
+                        strcpy(nodo->curso->IDcurso, campo);
                     }
                     break;
                 case 1:
@@ -229,8 +234,8 @@ HashMap * import_courses(void){ /* Semi COMENTADO */
         }
 
         // Insertar nodo en grafo.
-        nodo->InfoCurso = course;
-        insertMap(grafo, _strdup(nodo->IDCurso), nodo);
+        nodo->curso = course;
+        insertMap(grafo, _strdup(nodo->curso->IDcurso), nodo);
     }
 
 
@@ -277,7 +282,7 @@ void insertCourses(char * str, Carrera * car, HashMap * courses){ /* LISTO */
         if(hashPair){
             Node * nodo = hashPair->value;
              if(nodo){
-                pushBack(car->Ramos, nodo->InfoCurso);
+                pushBack(car->Ramos, nodo->curso);
              }
         }        
     }
@@ -351,30 +356,6 @@ List * import_carreras(HashMap * courses){/* LISTO */
     return carreras;
 }
 
-void mostrarCurso(HashMap * g){ /* Test */
-    int i = 1;
-    Pair * par = firstMap(g);
-    while(par != NULL){
-        Node * nodo = par->value;
-        Curso * course = nodo->InfoCurso;
-
-        printf("%d ID curso : %s\n", i, nodo->IDCurso);
-        printf("Nombre curso : %s\n", course->NomCurso);
-        printf("Periodo : %s\n", course->Periodo);
-
-        printf("Requisitos: ");
-
-        Node * req = (Node*) firstList(nodo->Requisitos);
-        while(req != NULL){
-            printf("%s ,", req->IDCurso);
-            req = (Node*) nextList(nodo->Requisitos);
-        }
-        printf("\n\n");
-        i++;
-        par = nextMap(g);
-    }
-}
-
 /* Comprueba que el nombre de usuario ingresado cumpla con las condiciones establecidas */
 int is_validuser(char * str){ /* COMENTADO */
     int i;
@@ -387,9 +368,33 @@ int is_validuser(char * str){ /* COMENTADO */
     return 1;
 }
 
+int is_newUsername(char * userName, List * users){
+
+    char copytry[MAXCHAR];
+    char copyUserName[MAXCHAR];
+
+    
+
+    Estudiante * student = (Estudiante*) firstList(users);
+    while(student!=NULL){
+        strcpy(copytry, userName);
+        strcpy(copyUserName, student->Nombre);
+
+        to_minusc(copytry);
+        to_minusc(copyUserName);
+
+        if(strcmp(copyUserName, copytry)==0)
+            return 0;
+        
+        student=(Estudiante*)nextList(users);
+    }
+
+    return 1;
+}
+
 /*  Controla interacciones con el usuario con tal de establecer un nombre de usuario 
     Retorna 0 si se cancela la operacion */
-int set_username(char * user){ /* COMENTADO */
+int set_username(char * user, List * users){ /* COMENTADO */
     int intentos = 0;
     do{
         system("cls");
@@ -416,8 +421,16 @@ int set_username(char * user){ /* COMENTADO */
         }
 
         if (is_validuser(user_imput)){
-            strcpy(user, user_imput);
-            return 1;
+
+            if(is_newUsername(user_imput, users)){
+                strcpy(user, user_imput);
+                return 1;   
+            }
+            else{
+                printf("\n Este nombre de usuario ya esta en uso!\n");
+                intentos++;
+                getchar();
+            }
         }
         else{
             intentos++;
@@ -588,13 +601,13 @@ List * fromPeriod(Estudiante * st, List * careers){ /* COMENTADO */
     }
 
     if(auxCar==NULL){
-        printf("PROBLEMA AL BUSCAR CARRERA EN FROMPERIOD\n");
+        printf("PROBLEMA AL BUSCAR CARRERA EN FROM PERIOD\n");
         exit(1);
     }
 
     Curso * course = (Curso*)firstList(auxCar->Ramos);
     while(course!=NULL){
-        if(strstr(course->Periodo, st->Periodo)){
+        if(atoi(course->Periodo) == atoi(st->Periodo)){
             pushBack(retList, course);
         }
         course=(Curso*)nextList(auxCar->Ramos);
@@ -630,7 +643,7 @@ int verifyCourse(Curso * course){ /* LISTO */
 }
 
 void insertRequisitos(Curso * curso, List * cursos, HashMap * dependencias){
-    //Buscar curso en dependencias
+    // Buscar curso en dependencias
     Pair * hashPair = searchMap(dependencias, curso->IDcurso);
     if(hashPair==NULL){
         printf("No se encontro el curso que debio haberse encontrado.");
@@ -641,17 +654,26 @@ void insertRequisitos(Curso * curso, List * cursos, HashMap * dependencias){
     Node * nodo = hashPair->value;
     List * requisitos = nodo->Requisitos;
 
-    Node * rec = (Node*)firstList(requisitos);
+    // Se recorre lista de cadenas correspondientes a el codigo del curso.
+    char * rec = (char*)firstList(requisitos);
     while(rec != NULL){
-        if(rec->InfoCurso != NULL){
-            pushCurrent(cursos, rec->InfoCurso);
+        // Se busca el codigo en dependencias para extraer el curso.
+        hashPair = searchMap(dependencias, rec);
+        Node * recNode = hashPair->value;
+        if(recNode==NULL){
+            printf("No se encontro recNode que deberia existir");
+            exit(1);
         }
-        rec = (Node*)nextList(requisitos);
+
+        if(recNode->curso != NULL){
+            pushCurrent(cursos, recNode->curso);
+        }
+        rec = (char*)nextList(requisitos);
     }
     return;
 }
 
-int modify_courses(Estudiante * student, List * careers, HashMap * dependencias){  /*EN PROGRESO*/
+int modify_courses(Estudiante * student, List * careers, HashMap * dependencias){ 
     char user_input[MAXCHAR];
     int num_imput;
 
@@ -664,7 +686,7 @@ int modify_courses(Estudiante * student, List * careers, HashMap * dependencias)
             "| por aquellos cursos que le preceden.                         |\n"
             "|                                                              |\n"
             "| > Ingrese cualquier numero distinto de 0 para continuar.     |\n"
-            "+==============================================================+\n\n\n");
+            "+==============================================================+\n");
     
     fgets(user_input, MAXCHAR, stdin);
     num_imput = toselect(user_input);
@@ -1089,7 +1111,7 @@ int set_password(Estudiante * user){ /* COMENTADO */
     return 0;
 }
 
-Estudiante * formulario(List * careers, HashMap * cursos){ /* LISTOOO */
+Estudiante * formulario(List * careers, HashMap * cursos, List * users){ /* LISTOOO */
     Estudiante * new_user;
     char selec[10];
     char user_name[MAXCHAR];
@@ -1123,7 +1145,7 @@ Estudiante * formulario(List * careers, HashMap * cursos){ /* LISTOOO */
     else{
         // Formulario por partes por orden. retorno de 0 significa que se ha cancelado el registro del usuario y se 
         // vuelve al menu principal
-        if(set_username(user_name))
+        if(set_username(user_name, users))
             strcpy(new_user->Nombre, user_name);
         else
             return NULL;
@@ -1297,7 +1319,7 @@ void readInsert_courses(Estudiante * user,  FILE * imput, HashMap * courses){
             }
 
             Node * nodo = hashPair->value;
-            pushBack(user->Cursos, nodo->InfoCurso);
+            pushBack(user->Cursos, nodo->curso);
             
             campo = get_csv_field(linea,i);
         }
@@ -1426,6 +1448,7 @@ List * import_allUsers(HashMap * courses){
     }
 
     while(fgets(linea, MAXCHAR, entrada) != NULL){
+        if(strlen(linea)<3) break;
         const char * campo = get_csv_field(linea, i);
 
         usuarioLeido = import_infoUsuario((char*) campo, courses);
@@ -1433,6 +1456,8 @@ List * import_allUsers(HashMap * courses){
             pushBack(usuarios, usuarioLeido);
         }
     }
+
+    fclose(entrada);
     return usuarios;
 }
 
@@ -1459,51 +1484,64 @@ Estudiante *  comprobar_user(List * usuarios, char * user_imput){
     char * tieneComa = strstr(imput,",");
     if(tieneComa) return 1;
     else return 0;
- }
+}
 
-void menu_usuario(List * usuarios, HashMap * cursos, List * carreras){
-    while(1){
-        system("cls");
-        puts("Ingrese usuario y contrasenya separados por una coma, sin espacio luego de la coma\n"
-            "Ejemplo: Nombre de usuario,contrasena");
-        
-   
-        char user_imput[MAXCHAR];
-        Estudiante * estudianteIngresado;
+void printStrList(List * strList){
+    int coma=0;
 
-        fgets(user_imput, MAXCHAR, stdin);
-        char * c = strstr(user_imput, "\n");
-        if(c) user_imput[c-user_imput] = '\0';
-        clean();
+    char * str = (char*)firstList(strList);
+    while(str!=NULL){
+        if(coma>0) printf(", ");
+        printf("%s", str);
 
-        if(comprobar_Formato(user_imput)==0){
-            printf( "No ha ingresado una cadena con el formato pedido\n"
-                    "Vuelva a intentarlo!");
-            getchar();
-        }
-        else{
-            if ( (estudianteIngresado = comprobar_user(usuarios,user_imput)) ){
-                utilidad_ap(estudianteIngresado);
-                return;
-            }
-            else
-            {
-                system("cls");
-                printf( "Al parecer este nombre de usuario o contrasena no existen.\n"
-                        "Ingrese cualquier numero mayor a 0 para intentar nuevamente: ");
-
-                fgets(user_imput, MAXCHAR, stdin);
-
-                if(toselect(user_imput) == 0){
-                    printf("\n\nNo ha ingresado un numero mayor a 0.\nVolviendo al menu principal...");
-                    clean();
-
-                    return;
-                }
-                clean();
-            } 
-        }
+        coma++;
+        str=(char*)nextList(strList);
     }
+    printf("\n");
+}
+
+void consecuenciasReprobacion(Estudiante * st, HashMap * cursos){
+    char user_imput[MAXCHAR];
+    const char * campo;
+    int i = 0;
+
+    system("cls");
+    printf("+=================================================================================+\n"
+           "| Aqui puede verificar como le afectara el reprobar un curso.                     |\n"
+           "|                                                                                 |\n"
+           "| Por favor, ingrese el codigo del curso que desea verificar. Puede ingresar uno  |\n" 
+           "| o mas cursos, asi como se especifica en el siguiente ejemplo:                   |\n"
+           "|                                                                                 |\n"
+           "| 'ABC 123' para un solo curso                                                    |\n"
+           "| 'ABC 123,DEF 456,GHI 789' para una serie de cursos.                             |\n"
+           "+=================================================================================+\n");
+
+    fgets(user_imput, MAXCHAR, stdin);
+    char * p = strstr(user_imput, "\n");
+    if(p) user_imput[p-user_imput] = '\0';
+    clean();
+
+    do{
+        campo = get_csv_field(user_imput, i);
+        if(campo==NULL) break;
+
+        Pair * hashPair = searchMap(cursos, (char*)campo);
+        if(hashPair == NULL){
+            printf("El curso %s no existe\nCancelando toda la operacion...");
+            getchar();
+            break;
+        }
+
+        Node * nodo = hashPair->value;
+        printf("Curso elegido : %s\n", campo);
+        printf("Requisitos : ");
+        printStrList(nodo->Requisitos);
+        printf("Subsiguientes : ");
+        printStrList(nodo->Subsiguientes);
+        getchar();
+        i++;
+    }while(1);
+
 }
 
 void utilidad_horario(Estudiante * user){
@@ -1517,7 +1555,7 @@ void utilidad_horario(Estudiante * user){
         printSemanaHorario(user->Horario);
 
         printf( "Puede entrar a algun dia para ver o modificar su horario!\n"
-                "Si desea volver al menu anterior, ingrese la cadena \"fin\"\n"
+                "Si desea volver al menu anterior, ingrese la cadena \"fin\"\n\n"
                 "Ingrese el nombre de un dia para modificar ese fragento: ");
 
         fgets(user_imput, MAXCHAR, stdin);
@@ -1560,6 +1598,142 @@ void utilidad_horario(Estudiante * user){
 
     }
     return;
+}
+
+
+void utilidad_ap(Estudiante *usuario, HashMap * cursos){
+
+    while(1){
+        long selec3;
+        long selec4;
+        char arch[MAXCHAR];
+    
+        system("cls");
+        printf("Navegador Academico\n\n"
+
+            "1. Mostrar datos Usuario\n"
+            "2. Calculador de Notas\n"
+            "3. Aprobacion y cursos\n"
+            "4. Visualizacion  y Modificacion de Notas\n"
+            "5. Organizador Horario\n"
+            "6. Valoracion del Curso\n"
+            "7. Cerrar sesion\n"
+
+            );
+
+        scanf("%ld", &selec3);
+        clean();
+
+        switch (selec3){
+
+            case 1:
+                system("cls");
+                puts("Estos son sus Datos");
+                //Mostrar_datos(arch,usuario)
+                clean();
+            break;
+
+            case 2:
+                system("cls");
+                puts("Nota y Porcentaje");
+                scanf("%s", arch);
+                getchar();
+                //Calculador(arch,usuario)
+                clean();
+            break;
+
+            case 3:
+            /*
+            3.2.3. Aprobación y cursos :
+                    Permite visualizar de que formas la aprovación o reprobación de algún curso en especí-
+                    fico afectará los estudios del usuario. Determina aquellos cursos a los cuales no se podría
+                    optar a futuro y si la reprobación de un curso conlleva la adición de un nuevo semestre en
+                    su carrera.
+            */
+            consecuenciasReprobacion(usuario, cursos);
+            
+            break;
+
+            case 4:
+                system("cls");
+                puts("Estas son sus notas");
+                //Mostrar_notas(arch,usuario)
+                clean();
+            break;
+
+            case 5:
+                system("cls");
+                utilidad_horario(usuario);
+                clean();
+            break; 
+
+            case 6:
+                system("cls");
+                puts("Ingrese valoracion del curso");
+                scanf("%s", arch);
+                clean();
+                //Valoracion(arch,usuario)
+                clean();
+
+            case 7:
+                system("cls");
+                printf("Ha decidido cerrar sesion!\nVolviendo almenu principal...");
+                getchar(); 
+                return;
+
+            default:
+                printf("La opcion que ha ingresado no es valida!\nVolviendo al menu anterior...");
+                getchar();
+            break;  
+        }
+    }
+}
+
+void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras){
+    while(1){
+        system("cls");
+        puts("Ingrese usuario y contrasenya separados por una coma, sin espacio luego de la coma\n"
+            "Ejemplo: Nombre de usuario,contrasena");
+        
+   
+        char user_imput[MAXCHAR];
+        Estudiante * estudianteIngresado;
+
+        fgets(user_imput, MAXCHAR, stdin);
+        char * c = strstr(user_imput, "\n");
+        if(c) user_imput[c-user_imput] = '\0';
+        clean();
+
+        if(comprobar_Formato(user_imput)==0){
+            printf( "No ha ingresado una cadena con el formato pedido\n"
+                    "Vuelva a intentarlo!");
+            getchar();
+        }
+        else{
+            if ( (estudianteIngresado = comprobar_user(usuarios,user_imput)) ){
+                utilidad_ap(estudianteIngresado, cursos);
+                return;
+            }
+            else
+            {
+                system("cls");
+                printf( "Al parecer este nombre de usuario o contrasena no existen.\n"
+                        "Ingrese cualquier numero mayor a 0 para intentar nuevamente: ");
+
+                fgets(user_imput, MAXCHAR, stdin);
+
+                if(toselect(user_imput) == 0){
+                    printf("\n\nNo ha ingresado un numero mayor a 0.\nVolviendo al menu principal...");
+                    clean();
+
+                    return;
+                }
+                clean();
+            } 
+        }
+    }
+}
+
 /* funcion calculadora notas ponderadas
 
     desc:   CASO A(NO POSEE TODAS SUS NOTAS)
@@ -1598,6 +1772,15 @@ void Calculadora_notas(){
 
             case 2:*/
 }
+
+
+/*
+3.2.3. Aprobación y cursos :
+Permite visualizar de que formas la aprovación o reprobación de algún curso en especí-
+fico afectará los estudios del usuario. Determina aquellos cursos a los cuales no se podría
+optar a futuro y si la reprobación de un curso conlleva la adición de un nuevo semestre en
+su carrera.
+*/
 
 
 /*fin funciones */
