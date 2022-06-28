@@ -1635,10 +1635,7 @@ void utilidad_ap(Estudiante *usuario, HashMap * cursos){
 
             case 2:
                 system("cls");
-                puts("Nota y Porcentaje");
-                scanf("%s", arch);
-                getchar();
-                //Calculador(arch,usuario)
+                Calculadora_notas();
                 clean();
             break;
 
@@ -1748,9 +1745,103 @@ void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras){
             -usuario ingresa sus notas y porcentaje de cada nota n veces
             -usuario ingresa porcentaje que vale el examen 
 */
+int calculoProm(int n,int tabla[n][2]){
+    int suma;
+    int porcentaje;
+    int nota;
+    int res;
+
+    for (int i=0;i<n;i++){
+        porcentaje=(tabla[i][2]);
+        nota=(tabla[i][1]);
+        res=nota * (porcentaje/100); 
+        suma=suma+res;
+        //printf("%d--%d--%d--%d\n",porcentaje,nota,res,suma);
+    }
+
+    return suma;
+}
+
+
+int ingresoNotas(int n,int aprob){
+    int tabla[n][2];
+    int nota,porc;
+    int cont=1;
+
+    for (int i=0;i<n-1;i++){
+        printf("+=================================================================================+\n"
+               "|          Porfavor ingresa tu nota #%d en el siguiente formato:                  |\n"
+               "|                          <6,20>                                                 |\n"
+               "+=================================================================================+\n",cont);
+        scanf("%d , %d",&tabla[i][1],&tabla[i][2]);
+        cont++;
+        system("cls");
+    }
+
+    clean();
+    system("cls");
+    int promedio=calculoProm(n,tabla);
+    printf("+=================================================================================+\n"
+            "| Tu tabla de notas y tu promedio es el siguiente:                               |\n"
+            "|                                                                                |\n"
+            "|                 notas--->%%porcentajes                                         |\n");
+                       
+    for (int j=0;j<n;j++){
+        
+    printf( "|                   %d--->%d%%                                                   |\n",tabla[j][1],tabla[j][2]);
+    }
+    printf("|                                                                                 |\n");
+    printf("|Promedio: %d                                                                     |\n",promedio);
+    printf("+=================================================================================+\n");
+    
+}
+
+int CalcularPorcentRes(int n,int tabla[n][2]){
+    int tot=100;
+
+    for (int i=0;i<n-1;i++){
+        printf("****%d*****",tabla[n][2]);
+    }
+
+    return tot;
+}
+
+int ingresoNfal(int n,int aprob){
+    int tabla[n][2];
+    int nota,porc;
+    int cont=1;
+    int notafal=3;
+    
+    for (int i=0;i<n-1;i++){
+        printf("+=================================================================================+\n"
+               "|          Porfavor ingresa tu nota #%d en el siguiente formato:                  |\n"
+               "|                          <6,20>                                                 |\n"
+               "+=================================================================================+\n",cont);
+        scanf("%d , %d",&tabla[i][1],&tabla[i][2]);
+        cont++;
+        system("cls");
+    }
+
+    int porcent=CalcularPorcentRes(n,tabla);
+    clean();
+    system("cls");
+    printf("+=================================================================================+\n"
+            "| Tu tabla de notas son la siguiente y necesitas un %d para aprobar el curso:    |\n"
+            "|                                                                                |\n"
+            "|                 notas--->%%porcentajes                                         |\n",notafal);
+                       
+    for (int j=0;j<n-1;j++){
+        
+    printf( "|                     %d--->%d%%                                                 |\n",tabla[j][1],tabla[j][2]);
+    }
+    printf("|          Necesitas un %d que equivale a el %d%% de tu promedio de aprobacion    |\n",notafal,porcent);
+    printf("+=================================================================================+\n");
+    
+}
+
 void Calculadora_notas(){
-    int NNotas;
-    int aprob;
+    long NNotas; 
+    long aprob;
     long selec;
 
 
@@ -1761,16 +1852,38 @@ void Calculadora_notas(){
            "| Selecciona la opcion que necesites:                                             |\n"
            "|                                                                                 |\n"
            "| 1.Si posees todas tu notas en el curso.                                         |\n"
-           "| 2.Si no posees todas tus notas, pero deseas saber la que necesitas para aprobar.|\n"
-           "|                                                                                 |\n" 
+           "| 2.Si no posees todas tus notas, pero deseas saber la nota que necesitas para    |\n"
+           "|   aprobar.                                                                      |\n" 
            "+=================================================================================+\n");
     scanf("%ld", &selec);
     clean();
-    /*
     switch(selec){
             case 1:
+                system("cls");
+                printf("+=================================================================================+\n"
+                       "| Porfavor ingresa tu numero de notas y el promedio de aprobacion del curso :     |\n"
+                       "|                                                                                 |\n"
+                       "|   ejemplo: ( 6 , 45 )                                                           |\n"
+                       "+=================================================================================+\n");
+                scanf("%ld,%ld",&NNotas,&aprob);
+                system("cls");
+                ingresoNotas(NNotas,aprob);
+                clean();
+            break;
 
-            case 2:*/
+            case 2:
+                system("cls");
+                printf("+=================================================================================+\n"
+                       "| Porfavor ingresa tu numero de notas y el promedio de aprobacion del curso :     |\n"
+                       "|                                                                                 |\n"
+                       "|   ejemplo: ( 6 , 45 )                                                           |\n"
+                       "+=================================================================================+\n");
+                scanf("%ld,%ld",&NNotas,&aprob);
+                system("cls");
+                ingresoNfal(NNotas,aprob);
+                clean();
+            break;
+    }
 }
 
 

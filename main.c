@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 
 #include "hashmap.h"
 #include "funciones.h"
@@ -10,6 +11,8 @@
 int main (void)
 {
     // Importar datos base para funcionamiento del programa.
+    system("COLOR 80");
+    
     HashMap * courses =  import_courses();
     List * careers = import_carreras(courses);
     List * users = import_allUsers(courses);

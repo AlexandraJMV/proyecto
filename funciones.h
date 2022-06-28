@@ -53,4 +53,5 @@ void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras);
 
 void utilidad_horario(Estudiante * user);
 
+void Calculadora_notas();
 #endif
