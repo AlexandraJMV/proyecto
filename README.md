@@ -13,9 +13,6 @@ gcc *.c -o ejecutable.exe
 
 * Las carreraa incluidaa en el programa solo corresponden a inginiería civil en ciencia de datos e ingeniería civil eléctrica, ya que es son de las cuales tenemos información mas detallada, aún así se podrían agregar carreras con igual tipo de información.
 
-* 
-
-*
 
 
 
@@ -54,3 +51,6 @@ Este punto consiste en una lista de cualidades positivas y por mejorar de cada i
     AM[!] Se solicita realizar y entregar avances de código con mayor margen de tiempo.
 
     JM[!] Se requiere mejor aspectos respecto al manejo de funciones y estructuras.
+
+
+PD:se solicita una revision en los commits que no se asignaron bien a los contribuidores 
