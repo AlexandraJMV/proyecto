@@ -1495,23 +1495,73 @@ int comprobar_Formato(char * input){
     else return 0;
 }
 
-/* Imprime todas las cadenas de una lista de cadenas */
-void printStrList(List * strList){
-    int coma=0;
+void analizar_consecuencias(Node * nodo, HashMap * cursos, Estudiante * student, List * Carreras){
 
-    char * str = (char*)firstList(strList);
-    while(str!=NULL){
-        if(coma>0) printf(", ");
-        printf("%s", str);
+    // Obtener carrera del usuario
+    Carrera * carrera_est = (Carrera*) firstList(Carreras);
+    while(carrera_est!=NULL){
 
-        coma++;
-        str=(char*)nextList(strList);
+        if(strcmp(carrera_est->NomCarrera, student->Carrera)==0) break;
+        carrera_est = (Carrera*) nextList(Carreras);
+    }
+
+    // Impresion requisitos del curso a revisar
+    printf( "Curso a revisar: %s\n"
+            "El nombre es : %s \n\n",nodo->curso->IDcurso, nodo->curso->NomCurso);
+
+    printf( "==============================================\n"
+            "|          Requisitos del curso              |\n"
+            "==============================================\n\n");
+
+
+    char * requisito = (char*)firstList(nodo->Requisitos);
+    while(requisito!=NULL){
+    
+        Pair * reqPair = searchMap(cursos, requisito);
+        if(reqPair==NULL) break;
+
+        Node * reqNode = reqPair->value;
+
+        printf("%s -> %s\n", reqNode->curso->IDcurso, reqNode->curso->NomCurso);
+
+        requisito = (char*)nextList(nodo->Requisitos);
     }
     printf("\n");
+
+    // Impresion y Analisis de cursos subsiguientes
+    printf( "==============================================\n"
+            "| Cursos que tienen como requisito %-9s |\n"
+            "==============================================\n\n", nodo->curso->IDcurso);
+    char * subsiguiente = (char*)firstList(nodo->Subsiguientes);
+    while(subsiguiente!=NULL){
+    
+        Pair * subPair = searchMap(cursos, subsiguiente);
+        if(subPair==NULL) break;
+
+        // Revisar que el curso extraido se encuentre en la carrera del estudiante.
+        Node * subNode = subPair->value;
+        Pair * inCarrera = searchMap(carrera_est->Ramos, subNode->curso->IDcurso);
+        if(inCarrera){
+
+            printf("%s -> %s\n\n", subNode->curso->IDcurso, subNode->curso->NomCurso);
+            printf("Su periodo es %s, el periodo del curso es %s.\n", student->Periodo, subNode->curso->Periodo);
+
+            if((atoi(student->Periodo)+1)!=atoi(subNode->curso->Periodo)){
+                printf( "El reprobar este curso no afectara directamente algun curso del proximo semestre\n"
+                        "Sin embargo, esto no significa que este a salvo.\n\n");
+            }
+            else{
+                printf("El reprobar este curso hace que no pueda dar este su proximo semestre!\n\n");
+            }
+                
+        }
+
+        subsiguiente = (char*)nextList(nodo->Subsiguientes);
+    }
 }
 
 
-void consecuenciasReprobacion(Estudiante * st, HashMap * cursos){
+void consecuenciasReprobacion(Estudiante * st, HashMap * cursos, List * carreras){
     char user_input[MAXCHARS];
     const char * campo;
     int i = 0;
@@ -1533,6 +1583,7 @@ void consecuenciasReprobacion(Estudiante * st, HashMap * cursos){
     clean();
 
     do{
+        system("cls");
         campo = get_csv_field(user_input, i);
         if(campo==NULL) break;
 
@@ -1544,11 +1595,8 @@ void consecuenciasReprobacion(Estudiante * st, HashMap * cursos){
         }
 
         Node * nodo = hashPair->value;
-        printf("Curso elegido : %s\n", campo);
-        printf("Requisitos : ");
-        printStrList(nodo->Requisitos);
-        printf("Subsiguientes : ");
-        printStrList(nodo->Subsiguientes);
+
+        analizar_consecuencias(nodo, cursos, st, carreras);
         getchar();
         i++;
     }while(1);
@@ -1613,7 +1661,7 @@ void utilidad_horario(Estudiante * user){
 }
 
 
-void utilidad_ap(Estudiante *usuario, HashMap * cursos){
+void utilidad_ap(Estudiante *usuario, HashMap * cursos, List * Carreras){
 
     while(1){
         long selec3;
@@ -1652,7 +1700,7 @@ void utilidad_ap(Estudiante *usuario, HashMap * cursos){
             break;
 
             case 3:
-            consecuenciasReprobacion(usuario, cursos);
+            consecuenciasReprobacion(usuario, cursos, Carreras);
             
             break;
 
@@ -1715,7 +1763,7 @@ void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras){
         }
         else{
             if ( (estudianteIngresado = comprobar_user(usuarios,user_input)) ){
-                utilidad_ap(estudianteIngresado, cursos);
+                utilidad_ap(estudianteIngresado, cursos, carreras);
                 return;
             }
             else
