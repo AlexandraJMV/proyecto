@@ -24,7 +24,7 @@ Este punto consiste en una lista de cualidades positivas y por mejorar de cada i
 
 <span style="color:yellow"> *_Antonia Acevedo_* </span>
 
-    AA[]
+    AA[!] Falta de tiempo por factores externos pero realizo gran parte de lo pedido.
 
     AM[!] Se solicita realizar y entregar avances de código con mayor margen de tiempo.
     
@@ -34,7 +34,7 @@ Este punto consiste en una lista de cualidades positivas y por mejorar de cada i
 
 <span style="color:green"> *_Alexandra Mendoza_*</span>
 
-    AA[] 
+    AA[+] Muy bien trabajado,  realiza su trabajo con un desempeño perfecto y efectivo.
     
     AM[!] Se nota una falta de cuidado y preocupación respecto a trabajos anteriores. Trabajar en intentar usar menos líneas de código cuando sea posible.
     
@@ -46,7 +46,7 @@ Este punto consiste en una lista de cualidades positivas y por mejorar de cada i
 
 <span style="color:yellow"> *_Jorge Morgado_* </span>
 
-    AA[]
+    AA[!] Ayuda a solucionar dudas pero requiere mejorar en funciones realizadas. 
 
     AM[!] Se solicita realizar y entregar avances de código con mayor margen de tiempo.
 
