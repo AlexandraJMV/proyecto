@@ -1731,17 +1731,21 @@ void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras){
 }
 
 /* funcion calculadora notas ponderadas
-    desc:   CASO A(NO POSEE TODAS SUS NOTAS)
+    desc:   
+            CASO A(POSEE TODAS SUS NOTAS)
+            -usuario inserta numero de notas
+            -usuario inserta promedio de aprobacion 
+            -usuario ingresa sus notas y porcentaje de cada nota n veces
+            -usuario ingresa porcentaje que vale el examen 
+    
+            
+            CASO b(NO POSEE TODAS SUS NOTAS)
             -usuario inserta numero de notas
             -usuario inserta promedio de aprobacion 
             -usuario ingresa sus notas y porcentaje de cada nota n veces 
             -se le da al usuario la nota que debe sacarse para aprobar
             
-            CASO B(POSEE TODAS SUS NOTAS)
-            -usuario inserta numero de notas
-            -usuario inserta promedio de aprobacion 
-            -usuario ingresa sus notas y porcentaje de cada nota n veces
-            -usuario ingresa porcentaje que vale el examen 
+            
 */
 int calculoProm(int n,int tabla[n][2]){
     int suma=0;

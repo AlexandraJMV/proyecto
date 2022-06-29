@@ -31,7 +31,7 @@ Este punto consiste en una lista de cualidades positivas y por mejorar de cada i
 
     AM[!] Se solicita realizar y entregar avances de código con mayor margen de tiempo.
     
-    JM[]
+    JM[+] Supo corregir errores en la estructura del menu.
 
 
 
@@ -41,7 +41,7 @@ Este punto consiste en una lista de cualidades positivas y por mejorar de cada i
     
     AM[!] Se nota una falta de cuidado y preocupación respecto a trabajos anteriores. Trabajar en intentar usar menos líneas de código cuando sea posible.
     
-    JM[]
+    JM[+] buen manejo de funciones y utilizacion de tdas.
 
 
 
@@ -53,4 +53,4 @@ Este punto consiste en una lista de cualidades positivas y por mejorar de cada i
 
     AM[!] Se solicita realizar y entregar avances de código con mayor margen de tiempo.
 
-    JM[]
+    JM[!] Se requiere mejor aspectos respecto al manejo de funciones y estructuras.
