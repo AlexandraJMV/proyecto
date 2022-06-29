@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include "hashmap.h"
 #include "funciones.h"
@@ -25,11 +24,13 @@ int main (void)
         int numselec;
 
         system("cls");
-        printf("----Navegador Academico----\n\n"
-
-                "1. Iniciar Sesion\n"
-                "2. Crear Perfil\n"
-                "3. Salir\n");
+        printf("+=================================================================================+\n"
+               "|                   ----Navegador Academico----                                   |\n"
+               "|                                                                                 |\n"
+               "|                        1. Iniciar Sesion                                        |\n"
+               "|                        2. Crear Perfil                                          |\n"
+               "|                        3. Salir                                                 |\n"
+               "+=================================================================================+\n");
         
 
         fgets(strselec, 10, stdin);
