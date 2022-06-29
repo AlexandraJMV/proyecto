@@ -3,15 +3,15 @@
 #include "hashmap.h"
 #include "list.h"
 
-#define MAXCHAR 300
+#define MAXCHARS 300
 #define MAXCOURSES 100
 #define TALLAHORARIO 14
 
 typedef struct Estudiante{
-    char Nombre[MAXCHAR];
-    char Contrasena[MAXCHAR];
-    char Periodo[MAXCHAR];
-    char Carrera[MAXCHAR];
+    char Nombre[MAXCHARS];
+    char Contrasena[MAXCHARS];
+    char Periodo[MAXCHARS];
+    char Carrera[MAXCHARS];
     List *Cursos;
     HashMap * Horario;
 }Estudiante;

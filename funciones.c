@@ -8,27 +8,21 @@
 #include "funciones.h"
 
 typedef struct Carrera{
-    char NomCarrera[MAXCHAR];
-    List *Ramos;
+    char NomCarrera[MAXCHARS];
+    HashMap *Ramos;
 }Carrera;
 
 typedef struct Curso{
-    char IDcurso[MAXCHAR]; // considerar eliminar
-    char NomCurso[MAXCHAR];
-    char Periodo[MAXCHAR];
-    char AreaCurso[MAXCHAR];
-    char EstadoAprovacion[MAXCHAR];
+    char IDcurso[MAXCHARS]; 
+    char NomCurso[MAXCHARS];
+    char Periodo[MAXCHARS];
+    char AreaCurso[MAXCHARS];
+    char EstadoAprovacion[MAXCHARS];
     float *NotaEximicion; 
     float *NotaAprobacion;
     List *Evaluaciones;
 }Curso;
-/*
-typedef struct {
-    char Identificador[MAXCHAR];
-    float *valor;
-    float *pctjPresentacion;
-}Evaluacion;
-*/
+
 typedef struct Node{
     Curso * curso;
     List* Requisitos;
@@ -36,13 +30,15 @@ typedef struct Node{
 } Node;
 
 typedef struct Bloque{
-    char actividad[MAXCHAR];
+    char actividad[MAXCHARS];
     int modificable;
     int ocupado;
 }Bloque;
 
 /*  funciones */
-int toselect(char * str){ /* LISTO */
+
+/* Convierte una cadena a una seleccion numerica. Devuelve 0 si no son numeros */
+int toselect(char * str){ 
     for(long i=0 ; str[i] != '\0' ; i++)
     {
         if(str[i]=='\n') break;
@@ -52,12 +48,13 @@ int toselect(char * str){ /* LISTO */
     return atoi(str);
 }
 
-void clean(void) { /* LISTO */
+/* Limpia input buffer para futuras lecturas */
+void clean(void) { 
     char c;
     while((c = getchar()) != '\n' && c != EOF){}
 }
 
-const char *get_csv_field (char * tmp, int k) { /* LISTO */
+const char *get_csv_field (char * tmp, int k) { 
     int open_mark = 0;
     char* ret=(char*) malloc (150*sizeof(char));
     int ini_i=0, i=0;
@@ -104,7 +101,7 @@ const char *get_csv_field (char * tmp, int k) { /* LISTO */
 }
 
 /*  Guarda memoria para un nuevo curso, inicia variables pertinentes y lo retorna */
-Curso * createCourse(void){ /* COMENTADO */
+Curso * createCourse(void){ 
     Curso * course = (Curso*)malloc(sizeof(Curso));
     if(course == NULL){
         perror("Error al reservar memoria para curso ");
@@ -115,7 +112,7 @@ Curso * createCourse(void){ /* COMENTADO */
 }
 
 /*  Guarda memoria para un nuevo nodo, inicia variables pertinentes y lo retorna */
-Node * create_graphNode(void){ /* COMENTADO */
+Node * create_graphNode(void){ 
     Node * nodo = (Node*)malloc(sizeof(Node));
     if (nodo == NULL){
         perror("Error al crear nodo para grafos. ");
@@ -128,7 +125,7 @@ Node * create_graphNode(void){ /* COMENTADO */
 }
 
 /* Convierte los caracteres de una cadena a minusculas */
-void to_minusc(char * str){ /* COMENTADO */
+void to_minusc(char * str){
 
     for(long i=0 ; str[i] != '\0' ; i++){
         str[i] = tolower(str[i]);
@@ -137,6 +134,7 @@ void to_minusc(char * str){ /* COMENTADO */
     return;
 }
 
+/* Funcion encargada de guardar los cursos y sus requisitos */
 void set_requisitos(const char *requstr, Node * node, HashMap * grafoCursos){ /* LISTO */
     int i = 0;
     Node * nodo;
@@ -176,9 +174,9 @@ void set_requisitos(const char *requstr, Node * node, HashMap * grafoCursos){ /*
 }
 
 /* Crea y retorna un grafo con cursos y sus dependencias */
-HashMap * import_courses(void){ /* Semi COMENTADO */
+HashMap * import_courses(void){ 
     FILE * entrada = NULL;
-    char str[MAXCHAR];
+    char str[MAXCHARS];
 
     HashMap * grafo = createMap(MAXCOURSES);
 
@@ -188,7 +186,7 @@ HashMap * import_courses(void){ /* Semi COMENTADO */
         exit(1);
     }
 
-    while(fgets(str, MAXCHAR, entrada) != NULL){
+    while(fgets(str, MAXCHARS, entrada) != NULL){
 
         Curso * course = createCourse();
         Node * nodo = create_graphNode();
@@ -244,19 +242,20 @@ HashMap * import_courses(void){ /* Semi COMENTADO */
 }
 
 /* Guarda memoria para una nueva variable carrera, inicia variables pertinentes y la retorna */
-Carrera * createCarrera(void){/* COMENTADO */
+Carrera * createCarrera(void){
     Carrera * new = (Carrera *)malloc(sizeof(Carrera));
     if(new == NULL)
     {
         perror("No sepudo reservar memoria para carrera ");
         exit(1);
     }
-    new->Ramos = createList();
+    new->Ramos = createMap(MAXCOURSES);
+    
     return new;
 }
 
 /* Devuelve copia de una carrera */
-Carrera * copiarCarrera(Carrera * car){/* COMENTADO */
+Carrera * copiarCarrera(Carrera * car){
     Carrera * copy = createCarrera();
     strcpy(copy->NomCarrera, car->NomCarrera);
     copy->Ramos = car->Ramos;
@@ -265,7 +264,8 @@ Carrera * copiarCarrera(Carrera * car){/* COMENTADO */
     return copy;
 }
 
-void insertCourses(char * str, Carrera * car, HashMap * courses){ /* LISTO */
+/*Inserta los cursos pertenecientes a una carrera al mapa de cursos asociado*/
+void insertCourses(char * str, Carrera * car, HashMap * courses){ 
     int i = 0, aux = 0;
     char * c;
 
@@ -282,39 +282,20 @@ void insertCourses(char * str, Carrera * car, HashMap * courses){ /* LISTO */
         if(hashPair){
             Node * nodo = hashPair->value;
              if(nodo){
-                pushBack(car->Ramos, nodo->curso);
+                insertMap(car->Ramos, _strdup(nodo->curso->IDcurso), nodo->curso);
              }
         }        
     }
 }
 
-void mostrarCarreras(List * list){ /* Test */
-    Carrera * car = (Carrera*) firstList(list);
-    int cont = 0;
-    while(car!=NULL){
-        printf("%s\n", car->NomCarrera);
-
-        Curso * cur = (Curso *) firstList(car->Ramos);
-        while(cur!=NULL){
-            cont++;
-            printf("%d %s\n", cont, cur->IDcurso);
-            cur =(Curso*)nextList(car->Ramos);
-        }
-        printf("\n");
-
-        car=(Carrera*)nextList(list);
-        
-    }
-    printf("\n%d\n", cont);
-}
-
-List * import_carreras(HashMap * courses){/* LISTO */
+/*A partir delarchivo carreras.txt, importa las carreras disponibles dentro de la aplicacion*/
+List * import_carreras(HashMap * courses){
     FILE * entrada = NULL;
     List * carreras;
     Carrera * aux_carrera;
 
     int start = 0, end = 0;
-    char str[MAXCHAR];
+    char str[MAXCHARS];
 
     entrada = fopen("archivos/carreras.txt", "rt");
     if (entrada==NULL){
@@ -325,7 +306,7 @@ List * import_carreras(HashMap * courses){/* LISTO */
     carreras = createList();
     aux_carrera = createCarrera();
 
-    while(fgets(str, MAXCHAR, entrada) != NULL){
+    while(fgets(str, MAXCHARS, entrada) != NULL){
         // Lectura linea a linea
         char * c;
         char * p = strstr(str, "\n");
@@ -348,7 +329,7 @@ List * import_carreras(HashMap * courses){/* LISTO */
         }
         if (end == 1 && start == 0){
             pushBack(carreras, copiarCarrera(aux_carrera));
-            aux_carrera->Ramos = createList();
+            aux_carrera->Ramos = createMap(MAXCOURSES);
             end = 0;
         }
     }
@@ -357,7 +338,7 @@ List * import_carreras(HashMap * courses){/* LISTO */
 }
 
 /* Comprueba que el nombre de usuario ingresado cumpla con las condiciones establecidas */
-int is_validuser(char * str){ /* COMENTADO */
+int is_validuser(char * str){ 
     int i;
     for(i=0 ; str[i] != '\0' && str[i] != '\n'; i++){
         if(isalpha(str[i]) == 0 && str[i] != ' ')
@@ -368,12 +349,11 @@ int is_validuser(char * str){ /* COMENTADO */
     return 1;
 }
 
+/*Verifica que un nombre de usuario no se encuentre en uso verificando el nombre de todos los usuarios*/
 int is_newUsername(char * userName, List * users){
 
-    char copytry[MAXCHAR];
-    char copyUserName[MAXCHAR];
-
-    
+    char copytry[MAXCHARS];
+    char copyUserName[MAXCHARS];
 
     Estudiante * student = (Estudiante*) firstList(users);
     while(student!=NULL){
@@ -394,7 +374,7 @@ int is_newUsername(char * userName, List * users){
 
 /*  Controla interacciones con el usuario con tal de establecer un nombre de usuario 
     Retorna 0 si se cancela la operacion */
-int set_username(char * user, List * users){ /* COMENTADO */
+int set_username(char * user, List * users){ 
     int intentos = 0;
     do{
         system("cls");
@@ -408,22 +388,22 @@ int set_username(char * user, List * users){ /* COMENTADO */
                 "+=================================================================================+\n\n"
                 "\n\nNombre de usuario: ");
 
-        char user_imput[MAXCHAR];
+        char user_input[MAXCHARS];
 
-        fgets(user_imput, MAXCHAR, stdin);
-        char * c = strstr(user_imput, "\n");
-        if(c) user_imput[c-user_imput] = '\0';
+        fgets(user_input, MAXCHARS, stdin);
+        char * c = strstr(user_input, "\n");
+        if(c) user_input[c-user_input] = '\0';
         clean();
 
         if (intentos > 2){
-            if(toselect(user_imput) != 0)
+            if(toselect(user_input) != 0)
                break;
         }
 
-        if (is_validuser(user_imput)){
+        if (is_validuser(user_input)){
 
-            if(is_newUsername(user_imput, users)){
-                strcpy(user, user_imput);
+            if(is_newUsername(user_input, users)){
+                strcpy(user, user_input);
                 return 1;   
             }
             else{
@@ -449,7 +429,7 @@ int set_username(char * user, List * users){ /* COMENTADO */
 }
 
 /* Reserva memoria para un tipo de dato estudiante, inicia variables correspondientes y lo retorna */
-Estudiante * create_student(){ /* COMENTADO */
+Estudiante * create_student(){ 
     Estudiante * newEst = (Estudiante*)malloc(sizeof(Estudiante));
     if(newEst==NULL){
         perror("No se pudo reservar memoria para nuevo estudiante ");
@@ -460,7 +440,7 @@ Estudiante * create_student(){ /* COMENTADO */
 }
 
 /* Retorna dato en posicion i dentro de una lista */
-void * posList(List * list, int pos){/* COMENTADO */
+void * posList(List * list, int pos){
     int cont=0;
     void* data = firstList(list);
     while (data!=NULL)
@@ -476,9 +456,9 @@ void * posList(List * list, int pos){/* COMENTADO */
 
 /*  Comtrola interacciones con el usuario con tal de establacer carrera a la cual pertenece 
     Retorna 0 si se cancela la operacion */
-int set_career(List * cars, Estudiante * user){/* COMENTADO */
+int set_career(List * cars, Estudiante * user){
     int cont = 0, select;
-    char user_input[MAXCHAR];
+    char user_input[MAXCHARS];
 
     system("cls");
     printf( "+=================================================================================+\n"
@@ -502,7 +482,7 @@ int set_career(List * cars, Estudiante * user){/* COMENTADO */
     }
     printf("----------------------------------------------------------------------\n");
     
-    fgets(user_input, MAXCHAR, stdin);
+    fgets(user_input, MAXCHARS, stdin);
     select = toselect(user_input);
 
     if(select > cont || select==0){
@@ -521,7 +501,7 @@ int set_career(List * cars, Estudiante * user){/* COMENTADO */
 }
 
 /* Busca el mayor periodo posible correspondiente a una carrera */
-int comprobarMaxPeriodo(char * str, List * carr){/* COMENTADO */
+int comprobarMaxPeriodo(char * str, List * carr){
     int max = 0, n;
     Carrera * auxCar = (Carrera*)firstList(carr);
     while (auxCar!=NULL)
@@ -532,12 +512,18 @@ int comprobarMaxPeriodo(char * str, List * carr){/* COMENTADO */
     }
 
     if (auxCar == NULL) return 0;
-
-    Curso * course = (Curso*)firstList(auxCar->Ramos);
+    
+    Pair * hashPair = firstMap(auxCar->Ramos);
+    Curso * course = hashPair->value;
+    
     while(course!=NULL){
         if((n = toselect(course->Periodo))>max)
             max = n;
-        course=(Curso*)nextList(auxCar->Ramos);
+
+        hashPair = nextMap(auxCar->Ramos);
+
+        if(hashPair==NULL) break;
+        course=hashPair->value;
     }
 
     return max;
@@ -545,8 +531,8 @@ int comprobarMaxPeriodo(char * str, List * carr){/* COMENTADO */
 
 /*  Controla interacciones con el usuario con tal de establecer el periodo al cual pertenece 
     Retorna 0 si se cancela la operacion  */
-int set_period(Estudiante * user, List * carreras){ /* COMENTADO */
-    char user_imput[MAXCHAR];
+int set_period(Estudiante * user, List * carreras){ 
+    char user_input[MAXCHARS];
     int comprobar_num, max_period;
     char * p;
     system("cls");
@@ -560,12 +546,12 @@ int set_period(Estudiante * user, List * carreras){ /* COMENTADO */
             "Nota: no ingrese los simbolos < o >\n"
             "===================================================\n");
     
-    fgets(user_imput, MAXCHAR, stdin);
-    p = strstr(user_imput, "\n");
+    fgets(user_input, MAXCHARS, stdin);
+    p = strstr(user_input, "\n");
     if(p)
-        user_imput[p-user_imput] = '\0';
+        user_input[p-user_input] = '\0';
     
-    comprobar_num = toselect(user_imput);
+    comprobar_num = toselect(user_input);
     max_period = comprobarMaxPeriodo(user->Carrera, carreras);
 
     if (comprobar_num>max_period && max_period != 0){
@@ -576,7 +562,7 @@ int set_period(Estudiante * user, List * carreras){ /* COMENTADO */
         return 0;
     } 
     else if(comprobar_num != 0)
-        strcpy(user->Periodo, user_imput);
+        strcpy(user->Periodo, user_input);
     else{
         system("cls");
         printf("Volviendo al menu principal...");
@@ -589,7 +575,7 @@ int set_period(Estudiante * user, List * carreras){ /* COMENTADO */
 }
 
 /* Retorna una lista con todos los cursos correspondientes a un periodo especifico, de una carrera especifica */
-List * fromPeriod(Estudiante * st, List * careers){ /* COMENTADO */
+List * fromPeriod(Estudiante * st, List * careers){
     List * retList = createList();
 
     Carrera * auxCar = (Carrera*)firstList(careers);
@@ -605,19 +591,25 @@ List * fromPeriod(Estudiante * st, List * careers){ /* COMENTADO */
         exit(1);
     }
 
-    Curso * course = (Curso*)firstList(auxCar->Ramos);
+    Pair * par = firstMap(auxCar->Ramos);
+    Curso * course = par->value;
     while(course!=NULL){
         if(atoi(course->Periodo) == atoi(st->Periodo)){
             pushBack(retList, course);
         }
-        course=(Curso*)nextList(auxCar->Ramos);
+
+        par = nextMap(auxCar->Ramos);
+
+        if(par==NULL) break;
+        course = par->value;
     }
     getchar();
     return retList;
 }
 
+/*Controla interaccion con el usuario con el fin de establecer que cursos se encuentra cursando. Retorna 0 si la respuesta es no*/
 int verifyCourse(Curso * course){ /* LISTO */
-    char user_imput[MAXCHAR];
+    char user_input[MAXCHARS];
     int verif;
 
     system("cls");
@@ -628,8 +620,8 @@ int verifyCourse(Curso * course){ /* LISTO */
     
     printf("Se encuentra realizando este curso?\nIngrese cualquier numero distinto de 0 si la respuesta es si\n");
 
-    fgets(user_imput, MAXCHAR, stdin);
-    verif = toselect(user_imput);
+    fgets(user_input, MAXCHARS, stdin);
+    verif = toselect(user_input);
 
     printf("\nGracias por la confirmacion!\n");
 
@@ -642,6 +634,7 @@ int verifyCourse(Curso * course){ /* LISTO */
     return 1;
 }
 
+/*Inserta las dependencias de un curso dentro de una listapara su posterior uso*/
 void insertRequisitos(Curso * curso, List * cursos, HashMap * dependencias){
     // Buscar curso en dependencias
     Pair * hashPair = searchMap(dependencias, curso->IDcurso);
@@ -673,9 +666,11 @@ void insertRequisitos(Curso * curso, List * cursos, HashMap * dependencias){
     return;
 }
 
+/*Maneja interacciones con el usuario con el objetivo de confirmar  que cursos se encuentra cursando
+Si retorna 0, se ha cancelado la operacion*/
 int modify_courses(Estudiante * student, List * careers, HashMap * dependencias){ 
-    char user_input[MAXCHAR];
-    int num_imput;
+    char user_input[MAXCHARS];
+    int num_input;
 
     system("cls");
     printf( "+==============================================================+\n"
@@ -688,10 +683,10 @@ int modify_courses(Estudiante * student, List * careers, HashMap * dependencias)
             "| > Ingrese cualquier numero distinto de 0 para continuar.     |\n"
             "+==============================================================+\n");
     
-    fgets(user_input, MAXCHAR, stdin);
-    num_imput = toselect(user_input);
+    fgets(user_input, MAXCHARS, stdin);
+    num_input = toselect(user_input);
 
-    if(num_imput == 0){
+    if(num_input == 0){
         printf( "No ha ingresado un numero!\n"
                 "Se le devolvera al menu principal.");
         clean();
@@ -721,7 +716,7 @@ int modify_courses(Estudiante * student, List * careers, HashMap * dependencias)
 } 
 
 /* Inicializa las variables de un arreglo de bloques */
-void set_variablesHorario(Bloque ** arreglo){  /* COMENTADO */
+void set_variablesHorario(Bloque ** arreglo){
  
     for(int i = 0 ; i<TALLAHORARIO ;i++){
         arreglo[i]->modificable = 1;
@@ -732,7 +727,7 @@ void set_variablesHorario(Bloque ** arreglo){  /* COMENTADO */
 }
 
 /*  Reserva memoria para arreglo de punteros para datos tipo bloque. Retorna el arreglo */
-Bloque ** reservMemBloques(Bloque ** arreglo){ /* COMENTADO */
+Bloque ** reservMemBloques(Bloque ** arreglo){ 
     Bloque ** aux =(Bloque**)malloc(sizeof(Bloque*)*TALLAHORARIO);
     if(aux==NULL) {
         printf("Error\n");
@@ -755,7 +750,7 @@ Metodo:
         Recorrer el arreglo correspondiente a dia, imprimimiendo la informacion
         correspondiente.
         Retorna 0 si el dia de la semana ingresado no se encuentra.*/
-int printDiaHorario(char * day, HashMap * horario){ /* COMENTADO */
+int printDiaHorario(char * day, HashMap * horario){ 
     to_minusc(day);
 
     Pair * hashPair = searchMap(horario, day);
@@ -783,9 +778,9 @@ int printDiaHorario(char * day, HashMap * horario){ /* COMENTADO */
 }
 
 /*  Crea y retorna hashmap para horario, inserta dias de la semana e inicia variables correspondinetes */
-HashMap * createHorario(){  /* COMENTADO */
+HashMap * createHorario(){
     HashMap * horario = createMap(20);
-    char dias[MAXCHAR]= "Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo";
+    char dias[MAXCHARS]= "Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo";
 
     for(int i = 0 ; i<7 ; i ++)
     {
@@ -802,7 +797,7 @@ HashMap * createHorario(){  /* COMENTADO */
 }
 
 /*  Guarda memoria para un arreglo de punteros de pares y lo retorna */
-Pair ** reservMemPares(int talla){  /* COMENTADO */
+Pair ** reservMemPares(int talla){  
     Pair ** aux =(Pair**)malloc(sizeof(Pair*)*TALLAHORARIO);
     if (aux==NULL){
         perror("Error reserva arreglo de punteros ");
@@ -830,8 +825,8 @@ Metodo:
         de forma ordenada a medida que se leen los dias de la cadena auxiliar.
         Para la impresion del resto de lineas simplemente se accede al bloque que corresponda al dia
         (posicion 0 a 6) y numero de linea (numero del bloque).*/    
-void printSemanaHorario(HashMap * horario){ /* COMENTADO */
-    char dias[MAXCHAR]= "Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo";
+void printSemanaHorario(HashMap * horario){ 
+    char dias[MAXCHARS]= "Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo";
     Pair ** pares = reservMemPares(7);
 
     for(int i = 0; i<TALLAHORARIO+1 ; i++)
@@ -869,8 +864,9 @@ void printSemanaHorario(HashMap * horario){ /* COMENTADO */
     printf("\n");
 }
 
-void verificarModificarBloque(char * day, HashMap * horario, int bloque){ /* LISTO */
-    char user_imput[MAXCHAR];
+/* Controla la interacción con el usuario con tal de modificar un bloque horario */
+void verificarModificarBloque(char * day, HashMap * horario, int bloque){
+    char user_input[MAXCHARS];
     int verif;
 
     system("cls");
@@ -891,15 +887,15 @@ void verificarModificarBloque(char * day, HashMap * horario, int bloque){ /* LIS
     }
 
     if(bloques[bloque-1]->ocupado == 1){
-        printf( "El bloque que usted ingreso se encuentra ocupado por la actividad: \n"
+        printf( "El bloque que usted ingreso se encuentra ocupado por la actividad:\n"
                 "%s.\n", bloques[bloque-1]->actividad);
-        printf( "\nDesea sobreescribir o eliminar este bloque?\n."
+        printf( "\nDesea sobreescribir o eliminar este bloque?\n"
                 "Ingrese un numero mayor a 10 para sobreescribir\n"
                 "Ingrese un numero menor o igual que 10 para eliminar\n");
 
-        fgets(user_imput, MAXCHAR, stdin);
+        fgets(user_input, MAXCHARS, stdin);
         clean();
-        verif = toselect(user_imput);
+        verif = toselect(user_input);
 
         if (verif==0){
             printf("\n\nOperancion cancelada.\nVolviendo a menu anterior....");
@@ -914,24 +910,24 @@ void verificarModificarBloque(char * day, HashMap * horario, int bloque){ /* LIS
             system("cls");
             printf("Por favor, ingrese la actividad que quiere insertar en este bloque.\n");
 
-            fgets(user_imput, MAXCHAR, stdin);
-            char * c = strstr(user_imput, "\n");
-            if(c) user_imput[c-user_imput] = '\0';
+            fgets(user_input, MAXCHARS, stdin);
+            char * c = strstr(user_input, "\n");
+            if(c) user_input[c-user_input] = '\0';
             clean();
 
-            strcpy(bloques[bloque-1]->actividad, user_imput);
+            strcpy(bloques[bloque-1]->actividad, user_input);
             printf("Su actividad ha sido insertada de forma exitosa.\nVolviendo a horario semanal...");
             return;
         }
     }
     else{
         printf("Por favor, ingrese la actividad que quiere insertar en este bloque.\n");
-        fgets(user_imput, MAXCHAR, stdin);
-        char * c = strstr(user_imput, "\n");
-        if(c) user_imput[c-user_imput] = '\0';
+        fgets(user_input, MAXCHARS, stdin);
+        char * c = strstr(user_input, "\n");
+        if(c) user_input[c-user_input] = '\0';
         clean();
 
-        strcpy(bloques[bloque-1]->actividad, user_imput);
+        strcpy(bloques[bloque-1]->actividad, user_input);
         bloques[bloque-1]->ocupado = 1;
         printf("Su actividad ha sido insertada de forma exitosa.\nVolviendo a horario semanal...");
         return;
@@ -939,8 +935,8 @@ void verificarModificarBloque(char * day, HashMap * horario, int bloque){ /* LIS
 }
 
 /* Una vez establecido el horario base, recorre cada bloque del horario para indicar que no son modificacles */
-void lock_horario(HashMap * horario){ /* COMENTADO */
-    char dias[MAXCHAR]= "lunes,martes,miercoles,jueves,viernes,sabado,domingo";
+void lock_horario(HashMap * horario){ 
+    char dias[MAXCHARS]= "lunes,martes,miercoles,jueves,viernes,sabado,domingo";
 
     for(int i=0 ; i<7 ; i++){
         const char * campo = get_csv_field(dias, i);
@@ -959,8 +955,8 @@ void lock_horario(HashMap * horario){ /* COMENTADO */
 
 /*  Controla mensajes e interaciones con el usuario con tal de establecer un horario. 
     Retorna 0 en caso que se cancele la operacion. */
-int set_horario(Estudiante * user){ /* COMENTADO */
-    char user_imput[MAXCHAR];
+int set_horario(Estudiante * user){ 
+    char user_input[MAXCHARS];
     HashMap * horario = createHorario();
 
     system("cls");
@@ -979,12 +975,12 @@ int set_horario(Estudiante * user){ /* COMENTADO */
            "|                                      > Ingrese cualquier numero para continuar. |\n"
            "+=================================================================================+\n");
 
-    fgets(user_imput, MAXCHAR, stdin);
-    char * p = strstr(user_imput, "\n");
-    if(p) user_imput[p-user_imput] = '\0';
+    fgets(user_input, MAXCHARS, stdin);
+    char * p = strstr(user_input, "\n");
+    if(p) user_input[p-user_input] = '\0';
     clean();
 
-    if(toselect(user_imput)==0){
+    if(toselect(user_input)==0){
         printf("Operacion cancelada.\nVolviendo al menu principal...");
         clean();
         return 0;
@@ -995,18 +991,18 @@ int set_horario(Estudiante * user){ /* COMENTADO */
         printSemanaHorario(horario);
 
         printf("Ingrese el nombre de un dia para modificar ese fragento de horario :");
-        fgets(user_imput, MAXCHAR, stdin);
-        char * c = strstr(user_imput, "\n");
-        if(c) user_imput[c-user_imput] = '\0';
+        fgets(user_input, MAXCHARS, stdin);
+        char * c = strstr(user_input, "\n");
+        if(c) user_input[c-user_input] = '\0';
         clean();
 
-        if(strcmp(user_imput, "fin")==0)
+        if(strcmp(user_input, "fin")==0)
         {
             printf("Ha terminado con su horario!");
             lock_horario(horario);
             break;
         }
-        else if(strcmp(user_imput, "0")==0)
+        else if(strcmp(user_input, "0")==0)
         {
             printf("Se ha cancelado la operacion.\nVolviendo al menu principal...\n");
             getchar();
@@ -1015,21 +1011,21 @@ int set_horario(Estudiante * user){ /* COMENTADO */
         else{
             int bloque;
             system("cls");
-            if (printDiaHorario(user_imput, horario)==0){
+            if (printDiaHorario(user_input, horario)==0){
                 printf("No se econtro el dia en la impresion de dias!\n");
                 getchar();
             }
             else{
                 char copyDia[50];
-                strcpy(copyDia, user_imput);
+                strcpy(copyDia, user_input);
 
                 printf("Seleccione algun bloque para ingresar/borrar alguna actividad: ");
 
-                fgets(user_imput, MAXCHAR, stdin);
-                char * c = strstr(user_imput, "\n");
-                if(c) user_imput[c-user_imput] = '\0';
+                fgets(user_input, MAXCHARS, stdin);
+                char * c = strstr(user_input, "\n");
+                if(c) user_input[c-user_input] = '\0';
 
-                bloque = toselect(user_imput);
+                bloque = toselect(user_input);
                 if (bloque==0 || bloque > TALLAHORARIO){
                     printf("\nEl bloque ingresado no es valido.\nVolviendo a horario semanal...");
                 }
@@ -1046,7 +1042,7 @@ int set_horario(Estudiante * user){ /* COMENTADO */
 
 /*  Revisa que una contrasena cumpla con las condiciones especificadas
     Retorna 0 si la contrasena no es valida.*/
-int is_validContrasena(char * intento){ /* COMENTADO */
+int is_validContrasena(char * intento){
     int len;
     for(int i = 0 ; intento[i]!='\0' ; i++){
         if(isalnum(intento[i]) == 0)
@@ -1061,8 +1057,8 @@ int is_validContrasena(char * intento){ /* COMENTADO */
 
 /*  Controla mensajes e interacciones con el usuario para establecer una contrasena. 
     Retorna 0 en caso de que se cancele la operacion. */
-int set_password(Estudiante * user){ /* COMENTADO */
-    char user_imput[MAXCHAR];
+int set_password(Estudiante * user){
+    char user_input[MAXCHARS];
     int intentos = 0;
     int comprobar;
     while(1){
@@ -1083,13 +1079,13 @@ int set_password(Estudiante * user){ /* COMENTADO */
 
         printf("Ingrese su contrasena:");
 
-        fgets(user_imput, MAXCHAR, stdin);
-        char * c = strstr(user_imput, "\n");
-        if(c) user_imput[c-user_imput] = '\0';
+        fgets(user_input, MAXCHARS, stdin);
+        char * c = strstr(user_input, "\n");
+        if(c) user_input[c-user_input] = '\0';
         clean();
 
         if(intentos>2){
-            if (strcmp(user_imput, "0")==0){
+            if (strcmp(user_input, "0")==0){
                 system("cls");
                 printf("Ha cancelado la operacion.\nVolviendoo a menu principal...");
                 getchar();
@@ -1097,12 +1093,12 @@ int set_password(Estudiante * user){ /* COMENTADO */
             }
         }
 
-        if(is_validContrasena(user_imput)==0){
+        if(is_validContrasena(user_input)==0){
             printf("La contrasena ingresada no es valida\nPor favor, intente nuevamente.\n");
             getchar();
         }
         else{
-            strcpy(user->Contrasena, user_imput);
+            strcpy(user->Contrasena, user_input);
             printf("\nSu contrasena ha sido establecida con exito!\n");
             getchar();
             return 1;
@@ -1111,10 +1107,12 @@ int set_password(Estudiante * user){ /* COMENTADO */
     return 0;
 }
 
-Estudiante * formulario(List * careers, HashMap * cursos, List * users){ /* LISTOOO */
+/*Función que se encarga de manejar las interacciones con el usuario para crear un nuevo perfil de estudiante
+  Retorna un dato del  tipo estudiante si se completó la operación con éxito */
+Estudiante * formulario(List * careers, HashMap * cursos, List * users){
     Estudiante * new_user;
     char selec[10];
-    char user_name[MAXCHAR];
+    char user_name[MAXCHARS];
     int confirm;
     
     new_user = create_student();
@@ -1168,6 +1166,7 @@ Estudiante * formulario(List * careers, HashMap * cursos, List * users){ /* LIST
     return new_user;
 }
 
+/* Inserta en archivo usuarios.csv el nombre de usuario y contraseña de un nuevo usuario luego de su creación */
 void insert_archUsuarios(Estudiante * user){ /* LISTO */
     FILE * entrada;
 
@@ -1177,19 +1176,21 @@ void insert_archUsuarios(Estudiante * user){ /* LISTO */
         exit(1);
     }
 
-    fprintf(entrada, "%s,%s\n", user->Nombre, user->Contrasena);
+    fprintf(entrada, "\n%s,%s", user->Nombre, user->Contrasena);
     fclose(entrada);
     return;
 }
 
-void toFormat(char * str){ /* LISTO */
+/* Modifica una cadena, volviendo sus espacios a guiones bajos */
+void toFormat(char * str){
     int len = strlen(str);
     for(int  i=0 ; i<len ; i++){
         if(str[i]==' ') str[i]='_';
     }
 }
 
-void write_Courses(FILE * salida, List * courses){ /* LISTO*/
+/* Escribe los cursos de un alumno en su archivo correspondiente */
+void write_Courses(FILE * salida, List * courses){
     int coma=0;
 
     fprintf(salida, "%s\n", "CURSOS");
@@ -1210,9 +1211,10 @@ void write_Courses(FILE * salida, List * courses){ /* LISTO*/
     return;
 }
 
+/* Escribe el horario de un alumno en su archivo correspondiente */
 void write_Horario(FILE *salida, HashMap *  horario){/* LISTO */
 
-    char dias[MAXCHAR] = "lunes,martes,miercoles,jueves,viernes,sabado,domingo";
+    char dias[MAXCHARS] = "lunes,martes,miercoles,jueves,viernes,sabado,domingo";
     fprintf(salida, "%s\n", "HORARIO");
 
     for(int i= 0; i<7 ; i++){
@@ -1241,6 +1243,7 @@ void write_Horario(FILE *salida, HashMap *  horario){/* LISTO */
     return;
 }
 
+/* Maneja la exportacion de información de un alumno en su archivo correspondiente */
 void write_studentInfo(Estudiante *student, FILE * salida){/* En progreso */
         
         for(int campo = 1; campo<7 ; campo++){
@@ -1268,14 +1271,15 @@ void write_studentInfo(Estudiante *student, FILE * salida){/* En progreso */
         return;
 }
 
+/* Maneja la exportacion de infromación de todos los alumnos */
 void export_infoUsuarios(List * users){ /* LISTO */
 
     Estudiante * student = (Estudiante*)firstList(users);
     while(student != NULL){
         // Nombre del archivo corresponde al nombre del usuario 
         // con los espacios reemplazados por _.
-        char path[MAXCHAR] = "archivos/info_usuarios/";
-        char auxnom[MAXCHAR];
+        char path[MAXCHARS] = "archivos/info_usuarios/";
+        char auxnom[MAXCHARS];
 
         strcpy(auxnom, student->Nombre);
         toFormat(auxnom);
@@ -1298,13 +1302,14 @@ void export_infoUsuarios(List * users){ /* LISTO */
     return;
 }
 
-void readInsert_courses(Estudiante * user,  FILE * imput, HashMap * courses){
+/*Lee cursos de un usuario desde un archivo y los inserta en la lista de cursos asociada al estudiante */
+void readInsert_courses(Estudiante * user,  FILE * input, HashMap * courses){
 
-    char linea[MAXCHAR*2];
+    char linea[MAXCHARS*2];
     const char * campo;
     
 
-    while(fgets(linea, MAXCHAR*2 , imput) != NULL){
+    while(fgets(linea, MAXCHARS*2 , input) != NULL){
         char * c = strstr(linea,"\n");
         if(c) linea[c-linea] = '\0';
 
@@ -1314,13 +1319,12 @@ void readInsert_courses(Estudiante * user,  FILE * imput, HashMap * courses){
         for(int i=1; campo != NULL ; i++){
             Pair * hashPair = searchMap(courses,(char*) campo);
             if(hashPair==NULL){
-                printf("Error busqueda en readInsert\n");
+                perror("Error busqueda en readInsert\n");
                 exit(1);
             }
 
             Node * nodo = hashPair->value;
             pushBack(user->Cursos, nodo->curso);
-            
             campo = get_csv_field(linea,i);
         }
     }
@@ -1328,6 +1332,7 @@ void readInsert_courses(Estudiante * user,  FILE * imput, HashMap * courses){
     return;
 }
 
+/*Lee los bloques de un usuario desde un archivo y los inserta en el arreglo de bloques  */
 void readInsertBloques(Bloque ** arrBloques, char * linea){    
     int i = 0, j = 0;
 
@@ -1347,11 +1352,12 @@ void readInsertBloques(Bloque ** arrBloques, char * linea){
     }
 }
 
-void read_horario(Estudiante * user, FILE * imput){
-    char linea[MAXCHAR*2];
+/*Lee la información de un horario desde un archivo y lo al estudiante */
+void read_horario(Estudiante * user, FILE * input){
+    char linea[MAXCHARS*2];
     HashMap * horario = createHorario();
     
-    while(fgets(linea, MAXCHAR*2 , imput) != NULL){
+    while(fgets(linea, MAXCHARS*2 , input) != NULL){
         Pair * hashPair;
         char *c = strstr(linea, "\n");
         if(c) linea[c-linea] = '\0';
@@ -1381,11 +1387,12 @@ void read_horario(Estudiante * user, FILE * imput){
     return;
 }
 
+/* Se encarga de leer la infromación de un usuario a partir de su archivo asociaado */
 Estudiante * import_infoUsuario(char * nombre, HashMap * courses){
 
     FILE * entrada;
-    char path[MAXCHAR] = "archivos/info_usuarios/";
-    char linea[MAXCHAR*2];
+    char path[MAXCHARS] = "archivos/info_usuarios/";
+    char linea[MAXCHARS*2];
     int campo = 1;
     
     Estudiante * old_student = create_student();
@@ -1403,7 +1410,7 @@ Estudiante * import_infoUsuario(char * nombre, HashMap * courses){
         exit(1);
     }
     
-    while(fgets(linea, MAXCHAR*2 , entrada) != NULL){
+    while(fgets(linea, MAXCHARS*2 , entrada) != NULL){
         
         char * c = strstr(linea,"\n");
         if(c) linea[c-linea] = '\0';
@@ -1433,11 +1440,12 @@ Estudiante * import_infoUsuario(char * nombre, HashMap * courses){
     return old_student;
 }
 
+/*Se encarga de importar la informacion de todos los usuarios registrados en la aplicación*/
 List * import_allUsers(HashMap * courses){
-    char path[MAXCHAR] = "archivos/usuarios.csv";
+    char path[MAXCHARS] = "archivos/usuarios.csv";
     List * usuarios = createList();
     Estudiante * usuarioLeido;
-    char linea[MAXCHAR];
+    char linea[MAXCHARS];
     FILE * entrada;
     int i = 0;
 
@@ -1447,7 +1455,7 @@ List * import_allUsers(HashMap * courses){
         exit(1);
     }
 
-    while(fgets(linea, MAXCHAR, entrada) != NULL){
+    while(fgets(linea, MAXCHARS, entrada) != NULL){
         if(strlen(linea)<3) break;
         const char * campo = get_csv_field(linea, i);
 
@@ -1461,13 +1469,14 @@ List * import_allUsers(HashMap * courses){
     return usuarios;
 }
 
-Estudiante *  comprobar_user(List * usuarios, char * user_imput){
+/* Realiza la comprobación de un usuario y su contraseña */
+Estudiante *  comprobar_user(List * usuarios, char * user_input){
 
     Estudiante * estLeido = (Estudiante*) firstList(usuarios);
     while (estLeido != NULL)
     {
-        const char * user = get_csv_field(user_imput,0);
-        const char * contr = get_csv_field(user_imput,1);
+        const char * user = get_csv_field(user_input,0);
+        const char * contr = get_csv_field(user_input,1);
 
         if(strcmp(user , estLeido->Nombre) == 0 
         && strcmp(contr, estLeido->Contrasena) == 0)
@@ -1480,12 +1489,13 @@ Estudiante *  comprobar_user(List * usuarios, char * user_imput){
 
  }
 
- int comprobar_Formato(char * imput){
-    char * tieneComa = strstr(imput,",");
+int comprobar_Formato(char * input){
+    char * tieneComa = strstr(input,",");
     if(tieneComa) return 1;
     else return 0;
 }
 
+/* Imprime todas las cadenas de una lista de cadenas */
 void printStrList(List * strList){
     int coma=0;
 
@@ -1500,8 +1510,9 @@ void printStrList(List * strList){
     printf("\n");
 }
 
+
 void consecuenciasReprobacion(Estudiante * st, HashMap * cursos){
-    char user_imput[MAXCHAR];
+    char user_input[MAXCHARS];
     const char * campo;
     int i = 0;
 
@@ -1516,13 +1527,13 @@ void consecuenciasReprobacion(Estudiante * st, HashMap * cursos){
            "| 'ABC 123,DEF 456,GHI 789' para una serie de cursos.                             |\n"
            "+=================================================================================+\n");
 
-    fgets(user_imput, MAXCHAR, stdin);
-    char * p = strstr(user_imput, "\n");
-    if(p) user_imput[p-user_imput] = '\0';
+    fgets(user_input, MAXCHARS, stdin);
+    char * p = strstr(user_input, "\n");
+    if(p) user_input[p-user_input] = '\0';
     clean();
 
     do{
-        campo = get_csv_field(user_imput, i);
+        campo = get_csv_field(user_input, i);
         if(campo==NULL) break;
 
         Pair * hashPair = searchMap(cursos, (char*)campo);
@@ -1544,9 +1555,10 @@ void consecuenciasReprobacion(Estudiante * st, HashMap * cursos){
 
 }
 
+/* Maneja interacciones con el usuario con tal de modificar su horario */
 void utilidad_horario(Estudiante * user){
     while(1){
-        char user_imput[MAXCHAR];
+        char user_input[MAXCHARS];
         int bloque;
 
         system("cls");
@@ -1558,13 +1570,13 @@ void utilidad_horario(Estudiante * user){
                 "Si desea volver al menu anterior, ingrese la cadena \"fin\"\n\n"
                 "Ingrese el nombre de un dia para modificar ese fragento: ");
 
-        fgets(user_imput, MAXCHAR, stdin);
-        char * c = strstr(user_imput, "\n");
-        if(c) user_imput[c-user_imput] = '\0';
+        fgets(user_input, MAXCHARS, stdin);
+        char * c = strstr(user_input, "\n");
+        if(c) user_input[c-user_input] = '\0';
         clean();
 
 
-        if(strcmp(user_imput, "fin")==0)
+        if(strcmp(user_input, "fin")==0)
         {
             system("cls");
             printf("Volviendo al menu principal...");
@@ -1573,21 +1585,21 @@ void utilidad_horario(Estudiante * user){
 
         system("cls");
 
-        if (printDiaHorario(user_imput, user->Horario)==0){
+        if (printDiaHorario(user_input, user->Horario)==0){
             printf("No se econtro el dia en la impresion de dias!\n");
             getchar();
         }
         else{
             char copyDia[50];
-            strcpy(copyDia, user_imput);
+            strcpy(copyDia, user_input);
 
             printf("Seleccione algun bloque para ingresar/borrar alguna actividad: ");
 
-            fgets(user_imput, MAXCHAR, stdin);
-            char * c = strstr(user_imput, "\n");
-            if(c) user_imput[c-user_imput] = '\0';
+            fgets(user_input, MAXCHARS, stdin);
+            char * c = strstr(user_input, "\n");
+            if(c) user_input[c-user_input] = '\0';
 
-            bloque = toselect(user_imput);
+            bloque = toselect(user_input);
             if (bloque==0 || bloque > TALLAHORARIO){
                 printf("\nEl bloque ingresado no es valido.\nVolviendo a horario semanal...");
             }
@@ -1606,7 +1618,7 @@ void utilidad_ap(Estudiante *usuario, HashMap * cursos){
     while(1){
         long selec3;
         long selec4;
-        char arch[MAXCHAR];
+        char arch[MAXCHARS];
     
         system("cls");
         printf("Navegador Academico\n\n"
@@ -1640,13 +1652,6 @@ void utilidad_ap(Estudiante *usuario, HashMap * cursos){
             break;
 
             case 3:
-            /*
-            3.2.3. Aprobación y cursos :
-                    Permite visualizar de que formas la aprovación o reprobación de algún curso en especí-
-                    fico afectará los estudios del usuario. Determina aquellos cursos a los cuales no se podría
-                    optar a futuro y si la reprobación de un curso conlleva la adición de un nuevo semestre en
-                    su carrera.
-            */
             consecuenciasReprobacion(usuario, cursos);
             
             break;
@@ -1686,6 +1691,8 @@ void utilidad_ap(Estudiante *usuario, HashMap * cursos){
     }
 }
 
+
+/* Se encarga de verificar el inicio de sesion  */
 void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras){
     while(1){
         system("cls");
@@ -1693,21 +1700,21 @@ void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras){
             "Ejemplo: Nombre de usuario,contrasena");
         
    
-        char user_imput[MAXCHAR];
+        char user_input[MAXCHARS];
         Estudiante * estudianteIngresado;
 
-        fgets(user_imput, MAXCHAR, stdin);
-        char * c = strstr(user_imput, "\n");
-        if(c) user_imput[c-user_imput] = '\0';
+        fgets(user_input, MAXCHARS, stdin);
+        char * c = strstr(user_input, "\n");
+        if(c) user_input[c-user_input] = '\0';
         clean();
 
-        if(comprobar_Formato(user_imput)==0){
+        if(comprobar_Formato(user_input)==0){
             printf( "No ha ingresado una cadena con el formato pedido\n"
                     "Vuelva a intentarlo!");
             getchar();
         }
         else{
-            if ( (estudianteIngresado = comprobar_user(usuarios,user_imput)) ){
+            if ( (estudianteIngresado = comprobar_user(usuarios,user_input)) ){
                 utilidad_ap(estudianteIngresado, cursos);
                 return;
             }
@@ -1717,9 +1724,9 @@ void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras){
                 printf( "Al parecer este nombre de usuario o contrasena no existen.\n"
                         "Ingrese cualquier numero mayor a 0 para intentar nuevamente: ");
 
-                fgets(user_imput, MAXCHAR, stdin);
+                fgets(user_input, MAXCHARS, stdin);
 
-                if(toselect(user_imput) == 0){
+                if(toselect(user_input) == 0){
                     printf("\n\nNo ha ingresado un numero mayor a 0.\nVolviendo al menu principal...");
                     clean();
 
@@ -1732,7 +1739,6 @@ void iniciar_sesion(List * usuarios, HashMap * cursos, List * carreras){
 }
 
 /* funcion calculadora notas ponderadas
-
     desc:   CASO A(NO POSEE TODAS SUS NOTAS)
             -usuario inserta numero de notas
             -usuario inserta promedio de aprobacion 
@@ -1885,15 +1891,4 @@ void Calculadora_notas(){
             break;
     }
 }
-
-
-/*
-3.2.3. Aprobación y cursos :
-Permite visualizar de que formas la aprovación o reprobación de algún curso en especí-
-fico afectará los estudios del usuario. Determina aquellos cursos a los cuales no se podría
-optar a futuro y si la reprobación de un curso conlleva la adición de un nuevo semestre en
-su carrera.
-*/
-
-
 /*fin funciones */
