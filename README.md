@@ -1,6 +1,6 @@
 >"Navegador Academico α"
 
-Esta aplicacion esta dirigida para los estudiantes universitarios que cursen una carrera universitaria, en la que el estudiante tendra diferentes funciones que lo ayuden a cursar de buena forma su etapa estudiantil.
+Esta aplicación está dirigida para los estudiantes universitarios que cursen una carrera universitaria, en la que el estudiante tendra diferentes funciones que lo ayuden a cursar de buena forma su etapa estudiantil.
 
 1.	Descargar el archivo .zip
 2.	Descomprimir en carpeta de preferencia
@@ -11,10 +11,10 @@ gcc *.c -o ejecutable.exe
 
 >*Comentarios y recomendaciones acerca del programa y sus funciones.*
 
-*Las carrera incluida en el programa solo corresponde a inginieria civil en ciencia de datos, ya que es la cual tenmos informacion mas detallada de esta, aun asi se podria agregar carreras con igual tipo de informacion.
+* Las carreraa incluidaa en el programa solo corresponden a inginiería civil en ciencia de datos e ingeniería civil eléctrica, ya que es son de las cuales tenemos información mas detallada, aún así se podrían agregar carreras con igual tipo de información.
 
-*
-*
+* 
+
 *
 
 
@@ -22,4 +22,35 @@ gcc *.c -o ejecutable.exe
 > Co-evaluación grupal.
 Este punto consiste en una lista de cualidades positivas y por mejorar de cada integrante, las cuales se deberán tener en cuenta para mejorar el trabajo en equipo en un futuro. [ + ] = Positivo [ ! ] = Por mejorar.
 
+<br>
 
+
+<span style="color:yellow"> *_Antonia Acevedo_* </span>
+
+    AA[]
+
+    AM[!] Se solicita realizar y entregar avances de código con mayor margen de tiempo.
+    
+    JM[]
+
+
+
+<span style="color:green"> *_Alexandra Mendoza_*</span>
+
+    AA[] 
+    
+    AM[!] Se nota una falta de cuidado y preocupación respecto a trabajos anteriores. Trabajar en intentar usar menos líneas de código cuando sea posible.
+    
+    JM[]
+
+
+
+<br>
+
+<span style="color:yellow"> *_Jorge Morgado_* </span>
+
+    AA[]
+
+    AM[!] Se solicita realizar y entregar avances de código con mayor margen de tiempo.
+
+    JM[]
