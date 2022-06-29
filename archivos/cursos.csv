@@ -48,3 +48,41 @@ ICD 5471,"Negocios, Innovacion y emprendimiento",10,ICD 5468,Ingenieria Aplicada
 ICD 5570,Seminario de Titulo,10,"ICD 2346,ICD 3148,ICD 3153,ICD 3354,ICD 4156,ICD 4157,ICD 4160,ICD 4262,ICD 5167,ICD 5465,ICD 5366,ICD 5468",Ingenieria Aplicada: Asignatura integradora de dominio
 ICD 6473,"Privacidad, etica y Seguridad",11,ICD 5471,Ingenieria Aplicada: Gestion en ciencia de dato
 ICD 6572,Proyecto de Titulo,11,ICD 5570,Ingenieria Aplicada: Asignatura integradora de dominio
+FIS 1121,Introdiccion a la fisica,1,Sin Prerrequisitos,Ciencias Basicas
+EIE 142,INTRODUCCION A LA INGENIERIA ELECTRICA Y INGENIERIA ELECTRONICA,1,Sin Prerrequisitos,Ciencias de la Ingenieria
+FIS 1001,FISICA MECANICA,2,MAT 1001,Ciencias Basicas
+QUI 1140,FUNDAMENTOS DE QUIMICA,2,Sin Prerrequisitos,Ciencias Basicas
+EIE 100,Programacion,3,Sin Prerrequisitos,Ciencias de la Ingenieria
+EIE 253,Tecno Mecanica de Materiales,3,QUI 1140,Ciencias de la Ingenieria
+FIS 1141,Fisica general ondas y termodinamica,3,FIS 1001,Ciencias Basicas
+MAT 1005,Ecuaciones Diferenciales,3,MAT 1003,Ciencias Basicas y Matematicas
+EIE 274,Laboratorio de Mediciones,4,MAT 1005,Ciencias de la Ingenieria
+EIE 267,Electromagnetismo,4,MAT 1003,Ciencias de la Ingenieria
+EIE 211,Estadistica y probabilidades para la Ingenieria,4,MAT 1002,Ciencias de la Ingenieria
+EIE 280,Teoria de Circuitos 1,4,MAT 1005,Ciencias de la Ingenieria
+EIE 275,Senyales y Sistemas,4,MAT 1003,Ciencias de la Ingenieria
+EIE 200,Programacion numerica,5,EIE 100,Ciencias de la Ingenieria
+EIE 315,Control Automatico,5,EIE 275,Profesional
+EIE 318,Campos y Ondas Electromagneticas,5,EIE 267,Ciencias de la Ingenieria
+EIE 326,Teoria de circuitos 2,5,"EIE 274,EIE 280",Profesional
+ICM 347,Termofluidos,5,ICM 347,Ciencias de la Ingenieria
+EIE 313,Metodos de Optimizacion,6,EIE 200,Profesional
+EIE 346,Conversion Electromagnetica de la Energia,6,"EIE 318,EIE 326",Profesional
+EIE 374,Circuitos Electronicos,6,EIE 280,Profesional
+EIE 400,Ingenieria economica y Formulacion de Proyectos,6,"EIE 274,EIE 267,EIE 211,EIE 280,EIE 275",Profesional
+EIE 430,Electronica de Potencia,7,EIE 347,Ingenieria Civil Electrica - Ingenieria Civil Electronica
+EIE 432,Maquinas Electricas,7,EIE 346,Ingenieria Civil Electrica
+EIE 433,Sistemas de Comunicaciones,7,EIE 316,Especifica Profesional
+EIE 450,Sistemas Electricos de Potencias,7,EIE 346,Profesional
+EIE 453,Innovacion y emprendimiento,7,"EIE 274,EIE 267,EIE 211,EIE 280,EIE 275",Ciencias de la Ingenieria
+EIE 502,Accionamiento de Maquinas,8,EIE 430,Profesional
+EIE 504,Protecciones de Sistemas Electronicos,8,EIE436,Profesional
+EIE 509,Laboratorio Electrico,8,EIE 432,Profesional
+EII 509,Gestion y Administracion,8,"EIE 313,EIE 346,EIE 374,EIE 400",Profesional
+DER 1170,"Normativa Social, Laboral y Ambiental",9,"EIE 274,EIE 267,EIE 211,EIE 280,EIE 275",Profesional
+EIE 518,Distribucion Electrica,9,EIE 518,Profesional
+EII 509,Gestion y Administracion,9,"EIE 274,EIE 267,EIE 211,EIE 280,EIE 275",Profesional
+EIE 524,Mercado Electrico,9,EIE 524,Profesional
+EIE 529,Produccion y Almacenamiento de Energia,10,EIE 509,Profesional
+EIE 630,Seminario de Proyectos,10,Sin Prerrequisitos,Profesional
+EIE 636,Proyecto de Titulacion,11,EIE 630,Profesional
