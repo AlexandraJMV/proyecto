@@ -11,6 +11,7 @@ int main (void)
 {
     // Importar datos base para funcionamiento del programa.
     system("COLOR 80");
+    system("mode con:cols=95 lines=30");
     
     HashMap * courses =  import_courses();
     List * careers = import_carreras(courses);
